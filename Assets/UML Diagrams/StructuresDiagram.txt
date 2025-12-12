@@ -1,0 +1,107 @@
+Structure <|-- Furnace
+
+@startuml
+!theme mars
+' UML diagram for Structure and its subtypes (PlantUML) with clearer interface layout
+
+class Structure {
+  # int maxHp
+  # int currHp
+  # Vector2 space
+  # int direction
+  # Vector2 position
+  # FindNeighbor()
+  
+}
+Structure ..|> ICanRemove
+
+interface ICanBuild {
+  # Build()
+}
+interface ICanMove {
+  # change
+}
+interface ICanRemove {
+
+}
+interface ObjCanShoot {
+  # enemy Enemy
+  # watchEnemy()
+  # shootEnemy()
+}
+interface ObjCanProduce {
+  # int productionSpeed
+  # takeObject()
+  # produceObject()
+  # int produceItemIndex
+}
+interface ObjCanTake {
+  # vec2d takeObjectList
+  # int takeObjectSpeed
+}
+
+class Obstacle
+Structure <|-- Obstacle
+
+class Wall
+Structure <|-- Wall
+Wall ..|> ICanBuild
+Wall ..|> ICanMove
+
+class TransportObject {
+  # int transportSpeed
+  # TransportObjectFunc()
+}
+Structure <|-- TransportObject
+TransportObject ..|> ICanBuild
+TransportObject ..|> ICanMove
+
+class Belt {
+  # TransportObject()
+}
+class Spliter {
+  # TransportObject()
+}
+class Insester {
+  # TransportObject()
+}
+
+TransportObject <|-- Belt
+TransportObject <|-- Spliter
+TransportObject <|-- Insester
+
+class ElectricPole {
+  # vec2d actionArea
+  # GiveElectricity()
+  # FindAnotherPole()
+  # FindObjectsToGive()
+}
+
+Structure <|-- ElectricPole
+ElectricPole ..|> ICanBuild
+ElectricPole ..|> ICanMove
+
+class Turret
+Structure <|-- Turret
+Turret ..|> ObjCanShoot
+Turret ..|> ObjCanTake
+Turret ..|> ICanBuild
+Turret ..|> ICanMove
+
+
+class Furnace
+Structure <|-- Furnace
+Furnace ..|> ObjCanProduce
+Furnace ..|> ObjCanTake
+Furnace ..|> ICanBuild
+Furnace ..|> ICanMove
+
+class Assembler
+Structure <|-- Assembler
+Assembler ..|> IObjanProduce
+Assembler ..|> ObjCanTake
+Assembler ..|> ICanBuild
+Assembler ..|> ICanMove
+
+
+@enduml
