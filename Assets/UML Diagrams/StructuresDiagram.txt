@@ -6,25 +6,23 @@ interface ICanBuild {
   # Build()
 }
 interface ICanMove {
-  # change
+  # Move()
+  # CheckPlace()
 }
 interface ICanRemove {
-
+  # Remove()
 }
 interface ICanShoot {
-  # enemy Enemy
   # watchEnemy()
   # shootEnemy()
 }
 interface ICanProduce {
-  # int productionSpeed
-  # takeObject()
+  # int productMaxSpeed
   # produceObject()
-  # int produceItemIndex
 }
 interface ICanTake {
   # vec2d takeObjectList
-  # int takeObjectSpeed
+  # int takeObjectMaxSpeed
 }
 interface IFindSameNeighbour {
   # FindNeighbour()
@@ -84,7 +82,9 @@ class ElectricPole {
 InteractiveObject <|-- ElectricPole
 ElectricPole ..|> IFindSameNeighbour
 
-class Turret
+class Turret {
+  - Enemy enemy
+}
 InteractiveObject <|-- Turret
 Turret ..|> ICanShoot
 Turret ..|> ICanTake
@@ -93,7 +93,10 @@ Turret ..|> IFindDiffNeighbour
 
 'class Furnace
 'class Assembler
-class Factory
+class Factory {
+  - int productCurrSpeed
+  - int produceItemIndex
+}
 InteractiveObject <|-- Factory
 Factory ..|> ICanProduce
 Factory ..|> ICanTake
