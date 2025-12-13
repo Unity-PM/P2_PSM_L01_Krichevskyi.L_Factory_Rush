@@ -1,19 +1,6 @@
-Structure <|-- Furnace
-
 @startuml
 !theme mars
 ' UML diagram for Structure and its subtypes (PlantUML) with clearer interface layout
-
-class Structure {
-  # int maxHp
-  # int currHp
-  # Vector2 space
-  # int direction
-  # Vector2 position
-  # FindNeighbor()
-  
-}
-Structure ..|> ICanRemove
 
 interface ICanBuild {
   # Build()
@@ -24,37 +11,55 @@ interface ICanMove {
 interface ICanRemove {
 
 }
-interface ObjCanShoot {
+interface ICanShoot {
   # enemy Enemy
   # watchEnemy()
   # shootEnemy()
 }
-interface ObjCanProduce {
+interface ICanProduce {
   # int productionSpeed
   # takeObject()
   # produceObject()
   # int produceItemIndex
 }
-interface ObjCanTake {
+interface ICanTake {
   # vec2d takeObjectList
   # int takeObjectSpeed
 }
+interface IFindSameNeighbour {
+  # FindNeighbour()
+}
+interface IFindDiffNeighbour {
+  # FindDiffNeighbour()
+}
+
+class Structure {
+  # int maxHp
+  # int currHp
+  # Vector2 space
+  # int direction
+  # Vector2 position
+}
+Structure ..|> ICanRemove
+
+class InteractiveObject
+Structure <|-- InteractiveObject
+InteractiveObject ..|> ICanBuild
+InteractiveObject ..|> ICanMove
 
 class Obstacle
 Structure <|-- Obstacle
 
 class Wall
-Structure <|-- Wall
-Wall ..|> ICanBuild
-Wall ..|> ICanMove
+InteractiveObject <|-- Wall
+Wall ..|> IFindSameNeighbour
 
 class TransportObject {
   # int transportSpeed
   # TransportObjectFunc()
 }
-Structure <|-- TransportObject
-TransportObject ..|> ICanBuild
-TransportObject ..|> ICanMove
+InteractiveObject <|-- TransportObject
+TransportObject ..|> IFindSameNeighbour
 
 class Belt {
   # TransportObject()
@@ -65,7 +70,6 @@ class Spliter {
 class Insester {
   # TransportObject()
 }
-
 TransportObject <|-- Belt
 TransportObject <|-- Spliter
 TransportObject <|-- Insester
@@ -77,31 +81,24 @@ class ElectricPole {
   # FindObjectsToGive()
 }
 
-Structure <|-- ElectricPole
-ElectricPole ..|> ICanBuild
-ElectricPole ..|> ICanMove
+InteractiveObject <|-- ElectricPole
+ElectricPole ..|> IFindSameNeighbour
 
 class Turret
-Structure <|-- Turret
-Turret ..|> ObjCanShoot
-Turret ..|> ObjCanTake
-Turret ..|> ICanBuild
-Turret ..|> ICanMove
+InteractiveObject <|-- Turret
+Turret ..|> ICanShoot
+Turret ..|> ICanTake
+Turret ..|> IFindDiffNeighbour
 
 
-class Furnace
-Structure <|-- Furnace
-Furnace ..|> ObjCanProduce
-Furnace ..|> ObjCanTake
-Furnace ..|> ICanBuild
-Furnace ..|> ICanMove
+'class Furnace
+'class Assembler
+class Factory
+InteractiveObject <|-- Factory
+Factory ..|> ICanProduce
+Factory ..|> ICanTake
+Factory ..|> IFindDiffNeighbour
 
-class Assembler
-Structure <|-- Assembler
-Assembler ..|> IObjanProduce
-Assembler ..|> ObjCanTake
-Assembler ..|> ICanBuild
-Assembler ..|> ICanMove
 
 
 @enduml
