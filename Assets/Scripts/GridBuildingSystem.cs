@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Testing : MonoBehaviour
+public class GridBuildingSystem : MonoBehaviour
 {
+    [SerializeField] private HeatMapVisual heatMapVisual;
     private Grid grid;
     void Start()
     {
-        grid = new Grid(4, 2, 5f, new Vector3(0, 0, 0));
+        grid = new Grid(20, 10, 5f, new Vector3(0,0,0));
+        heatMapVisual.SetGrid(grid);
     }
 
     void Update()
@@ -18,7 +20,8 @@ public class Testing : MonoBehaviour
         {
             int x, z;
             grid.GetXY(new Vector3(hitData.point.x, 0, hitData.point.z), out x, out z);
-            grid.SetValue(x, z, 56);
+            int value = grid.GetValue(x, z);
+            grid.SetValue(x, z, value + 5);
         }
         else if (Physics.Raycast(ray, out hitData) && Input.GetMouseButtonDown(1))
         {

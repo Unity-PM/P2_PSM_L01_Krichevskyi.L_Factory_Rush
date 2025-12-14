@@ -4,8 +4,10 @@ using UnityEditor.Experimental.GraphView;
 
 public class Grid
 {
+    public const int HEAT_MAP_MAX_VALUE = 100;
+    public const int HEAT_MAP_MIN_VALUE = 0;
 
-    private int width;
+    private int width; 
     private int height;
     private float cellSize;
     private Vector3 originPosition;
@@ -38,7 +40,7 @@ public class Grid
         SetValue(0, 1, 56);
     }
 
-    private Vector3 GetWorldPosition(int x, int z)
+    public Vector3 GetWorldPosition(int x, int z)
     {
         return new Vector3(x, 0, z) * cellSize + originPosition;
     }
@@ -71,7 +73,7 @@ public class Grid
     public void SetValue(int x, int z, int value) {
         if (x >= 0 && z >= 0 && x < width && z < height)
         {
-            gridArray[x, z] = value;
+            gridArray[x, z] = Mathf.Clamp(value, HEAT_MAP_MIN_VALUE, HEAT_MAP_MAX_VALUE);
             debugTextArray[x,z].text = gridArray[x,z].ToString();
         }
     }
@@ -96,5 +98,18 @@ public class Grid
         int x, z;
         GetXY(worldPosition, out x, out z);
         return GetValue(x, z);
+    }
+
+    public int GetWidth()
+    {
+        return width;
+    }
+    public int GetHeight()
+    {
+        return height;
+    }
+    public float GetCellSize()
+    {
+        return cellSize;
     }
 }

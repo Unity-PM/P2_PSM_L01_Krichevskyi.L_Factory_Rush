@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class StructureScript : ScriptableObject, ICanBuild, ICanRemove
+public class StructureScript : MonoBehaviour, ICanBuild, ICanRemove
 {
     [SerializeField] protected int maxHp;
     [SerializeField] protected int currHp;
@@ -11,11 +11,11 @@ public class StructureScript : ScriptableObject, ICanBuild, ICanRemove
 
     public void Build()
     {
-
+        Debug.Log("I'm in the Build() inside StructureScript");
     }
     public void Remove()
     {
-
+        Debug.Log("I'm in the Remove() inside StructureScript");
     }
 
 }
