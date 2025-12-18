@@ -1,3 +1,4 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
@@ -6,6 +7,13 @@ public class Grid
 {
     public const int HEAT_MAP_MAX_VALUE = 100;
     public const int HEAT_MAP_MIN_VALUE = 0;
+
+    public event EventHandler<OnGridValueChangedEventArgs> OnGridValueChanged;
+    public class OnGridValueChangedEventArgs : EventArgs
+    {
+        public int x;
+        public int z;
+    }
 
     private int width; 
     private int height;
@@ -75,6 +83,7 @@ public class Grid
         {
             gridArray[x, z] = Mathf.Clamp(value, HEAT_MAP_MIN_VALUE, HEAT_MAP_MAX_VALUE);
             debugTextArray[x,z].text = gridArray[x,z].ToString();
+            if (OnGridValueChanged != null) OnGridValueChanged(this, new OnGridValueChangedEventArgs { x = x, z = z });
         }
     }
     public void SetValue(Vector3 worldPosition, int value)
