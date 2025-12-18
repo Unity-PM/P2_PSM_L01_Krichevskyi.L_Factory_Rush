@@ -7,7 +7,7 @@ public class GridBuildingSystem : MonoBehaviour
     private Grid grid;
     void Start()
     {
-        grid = new Grid(20, 10, 5f, new Vector3(0,0,0));
+        grid = new Grid(10,10, 5f, new Vector3(0,0,0));
         heatMapVisual.SetGrid(grid);
     }
 

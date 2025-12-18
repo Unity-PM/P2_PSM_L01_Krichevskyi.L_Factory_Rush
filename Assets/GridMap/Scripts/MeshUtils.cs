@@ -13,6 +13,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public static class MeshUtils {
     
@@ -26,7 +27,7 @@ public static class MeshUtils {
         if (cachedQuaternionEulerArr != null) return;
         cachedQuaternionEulerArr = new Quaternion[360];
         for (int i=0; i<360; i++) {
-            cachedQuaternionEulerArr[i] = Quaternion.Euler(90,0,i);
+            cachedQuaternionEulerArr[i] = Quaternion.Euler(0,0,i);
         }
     }
     private static Quaternion GetQuaternionEuler(float rotFloat) {
@@ -128,21 +129,32 @@ public static class MeshUtils {
 
         baseSize *= .5f;
 
+
+        float rotZ = 0;
+        float rotX = 90;
+        float rotY = 0;
+
+        Quaternion rotation = Quaternion.Euler(rotX, rotY, rotZ);
+
         bool skewed = baseSize.x != baseSize.y;
-        if (skewed) {
-			vertices[vIndex0] = pos+GetQuaternionEuler(rot)*new Vector3(-baseSize.x,  baseSize.y);
-			vertices[vIndex1] = pos+GetQuaternionEuler(rot)*new Vector3(-baseSize.x, -baseSize.y);
-			vertices[vIndex2] = pos+GetQuaternionEuler(rot)*new Vector3( baseSize.x, -baseSize.y);
-			vertices[vIndex3] = pos+GetQuaternionEuler(rot)*baseSize;
-		} else {
-			vertices[vIndex0] = pos+GetQuaternionEuler(rot-270)*baseSize;
-			vertices[vIndex1] = pos+GetQuaternionEuler(rot-180)*baseSize;
-			vertices[vIndex2] = pos+GetQuaternionEuler(rot- 90)*baseSize;
-			vertices[vIndex3] = pos+GetQuaternionEuler(rot-  0)*baseSize;
-		}
-		
-		//Relocate UVs
-		uvs[vIndex0] = new Vector2(uv00.x, uv11.y);
+
+        if (skewed)
+        {
+            vertices[vIndex0] = pos + rotation * new Vector3(-baseSize.x, baseSize.y, 0f);
+            vertices[vIndex1] = pos + rotation * new Vector3(-baseSize.x, -baseSize.y, 0f);
+            vertices[vIndex2] = pos + rotation * new Vector3(baseSize.x, -baseSize.y, 0f);
+            vertices[vIndex3] = pos + rotation * new Vector3(baseSize.x, baseSize.y, 0f);
+        }
+        else
+        {
+            vertices[vIndex0] = pos + rotation * Quaternion.Euler(0, 0, -270) * new Vector3(baseSize.x, baseSize.y, 0f);
+            vertices[vIndex1] = pos + rotation * Quaternion.Euler(0, 0, -180) * new Vector3(baseSize.x, baseSize.y, 0f);
+            vertices[vIndex2] = pos + rotation * Quaternion.Euler(0, 0, -90) * new Vector3(baseSize.x, baseSize.y, 0f);
+            vertices[vIndex3] = pos + rotation * Quaternion.Euler(0, 0, 0) * new Vector3(baseSize.x, baseSize.y, 0f);
+        }
+
+        //Relocate UVs
+        uvs[vIndex0] = new Vector2(uv00.x, uv11.y);
 		uvs[vIndex1] = new Vector2(uv00.x, uv00.y);
 		uvs[vIndex2] = new Vector2(uv11.x, uv00.y);
 		uvs[vIndex3] = new Vector2(uv11.x, uv11.y);
@@ -158,6 +170,6 @@ public static class MeshUtils {
 		triangles[tIndex+4] = vIndex3;
 		triangles[tIndex+5] = vIndex2;
 
-		
+
     }
 }
