@@ -1,40 +1,67 @@
 @startuml
 !theme mars
-' UML diagram for Structure and its subtypes (PlantUML) with clearer interface layout
+' protected # may also be private with getter
 
 interface ICanBuild {
-  # Build()
+  <<MonoBehaviour>>
+  + void Build()
+  --
 }
 interface ICanMove {
-  # Move()
-  # CheckPlace()
+  <<MonoBehaviour>>
+  + void Move()
+  + void CheckPlace()
+  --
 }
 interface ICanRemove {
-  # Remove()
+  <<MonoBehaviour>>
+  + void Remove()
+  --
 }
 interface ICanShoot {
-  # watchEnemy()
-  # shootEnemy()
-}
-interface ICanProduce {
-  # int productMaxSpeed
-  # produceObject()
+  <<MonoBehaviour>>
+  + Enemy enemy
+  + void watchEnemy()
+  + void shootEnemy()
+  --
 }
 interface ICanTake {
-  # vec2d takeObjectList
-  # int takeObjectMaxSpeed
+  <<MonoBehaviour>>
+  + void TakeItem();
+  --
+  <<ScriptableObject>>
+  + int takeItemMaxSpeed
+  + List<Item> inputItemList
 }
 interface IFindSameNeighbour {
-  # FindNeighbour()
+  <<MonoBehaviour>>
+  + void FindNeighbour(out List<T> neighbourList)
+  --
 }
 interface IFindDiffNeighbour {
-  # FindDiffNeighbour()
+  <<MonoBehaviour>>
+  + void FindDiffNeighbour(out List<T> neighbourList)
+  --
+}
+interface ICanProduce {
+  <<MonoBehaviour>>
+  + void ProduceObject()
+  --
+  <<ScriptableObject>>
+  + void List<Recipe> recipeList
+}
+interface ICanTransport {
+  <<MonoBehaviour>>
+  + void TransportItem()
+  --
+  <<ScriptableObject>>
+  + float transportSpeed
 }
 
-class Structure {
-  # int maxHp
+
+class Structure <<MonoBehaviour>> {
+  <<MonoBehaviour>>
   # int currHp
-  # Vector2 space
   # int direction
   # Vector2 position
 }
@@ -45,63 +72,121 @@ Structure <|-- InteractiveObject
 InteractiveObject ..|> ICanBuild
 InteractiveObject ..|> ICanMove
 
-class Obstacle
+class Obstacle {
+  <<ScriptableObject>>
+  - int maxHp
+  - Vector2 space
+}
 Structure <|-- Obstacle
 
-class Wall
+class Wall {
+  --
+  <<ScriptableObject>>
+  - int maxHp
+  - Vector2 space
+}
 InteractiveObject <|-- Wall
 Wall ..|> IFindSameNeighbour
 
-class TransportObject {
-  # int transportSpeed
-  # TransportObjectFunc()
-}
-InteractiveObject <|-- TransportObject
-TransportObject ..|> IFindSameNeighbour
 
+'Transport Structures
 class Belt {
-  # TransportObject()
+  --
+  <<ScriptableObject>>
+  - int maxHp
+  - Vector2 space
 }
+InteractiveObject <|-- Belt
+Belt ..|> IFindSameNeighbour
+Belt ..|> ICanTransport
 class Spliter {
-  # TransportObject()
+  --
+  <<ScriptableObject>>
+  - int maxHp
+  - Vector2 space
 }
+InteractiveObject <|-- Spliter
+Spliter ..|> IFindSameNeighbour
+Spliter ..|> ICanTransport
 class Insester {
-  # TransportObject()
+  --
+  <<ScriptableObject>>
+  - int maxHp
+  - Vector2 space
 }
-TransportObject <|-- Belt
-TransportObject <|-- Spliter
-TransportObject <|-- Insester
+InteractiveObject <|-- Insester
+Insester ..|> IFindSameNeighbour
+Insester ..|> ICanTransport
 
 class ElectricPole {
-  # vec2d actionArea
-  # GiveElectricity()
-  # FindAnotherPole()
-  # FindObjectsToGive()
+  <<MonoBehaviour>>
+  - void GiveElectricity()
+  - void FindAnotherPole()
+  - void FindObjectsToGive()
+  --
+  <<ScriptableObject>>
+  - int maxHp
+  - Vector2 space
+  - vec2d actionArea
 }
 
 InteractiveObject <|-- ElectricPole
 ElectricPole ..|> IFindSameNeighbour
 
 class Turret {
+  <<MonoBehaviour>>
   - Enemy enemy
+  --
+  <<ScriptableObject>>
+  - int maxHp
+  - Vector2 space
 }
 InteractiveObject <|-- Turret
 Turret ..|> ICanShoot
 Turret ..|> ICanTake
 Turret ..|> IFindDiffNeighbour
 
-
 'class Furnace
 'class Assembler
+
 class Factory {
+  <<MonoBehaviour>>
   - int productCurrSpeed
-  - int produceItemIndex
+  --
+  <<ScriptableObject>>
+  - int maxHp
+  - Vector2 space
+  - int productMaxSpeed
 }
 InteractiveObject <|-- Factory
 Factory ..|> ICanProduce
 Factory ..|> ICanTake
 Factory ..|> IFindDiffNeighbour
 
+class Item <<ScriptableObject>> {
+  # string name
+  # Sprite icon
+}
 
+class Recipe <<ScriptableObject>> {
+  # void List<ItemData> inputItems
+  # void List<int> inputCounts
+  # void List<ItemData> outputItems
+  # void List<int> outputCounts
+  # void float productionTime
+  # void float energyCost
+}
+
+class Grid <<MonoBehaviour>> {
+  <<MonoBehaviour>>
+  - int[,] gridArray
+  - TextMesh[,] debugTextArray
+  --
+  <<ScriptableObject>>
+  - int width
+  - int height
+  - float cellSize
+  - Vector3 originPosition
+}
 
 @enduml
