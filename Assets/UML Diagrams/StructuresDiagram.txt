@@ -2,60 +2,67 @@
 !theme mars
 ' protected # may also be private with getter
 
-interface ICanBuild {
+'Structure
+interface IStrCanBuild {
   <<MonoBehaviour>>
   + void Build()
-  --
-}
-interface ICanMove {
-  <<MonoBehaviour>>
-  + void Move()
   + void CheckPlace()
   --
 }
-interface ICanRemove {
+interface IStrCanMove {
+  <<MonoBehaviour>>
+  + void Move()
+  --
+}
+interface IStrCanRemove {
   <<MonoBehaviour>>
   + void Remove()
   --
 }
-interface ICanShoot {
+interface IStrCanShoot {
   <<MonoBehaviour>>
   + Enemy enemy
-  + void watchEnemy()
-  + void shootEnemy()
+  + void WatchEnemy()
+  + void ShootEnemy()
   --
 }
-interface ICanTake {
+interface IStrCanTake {
   <<MonoBehaviour>>
   + void TakeItem();
   --
-  <<ScriptableObject>>
-  + int takeItemMaxSpeed
-  + List<Item> inputItemList
 }
-interface IFindSameNeighbour {
+interface IStrFindSameNeighbour {
   <<MonoBehaviour>>
-  + void FindNeighbour(out List<T> neighbourList)
+  + void FindSameNeighbour(out List<T> neighbourList)
   --
 }
-interface IFindDiffNeighbour {
+interface IStrCanProduce {
   <<MonoBehaviour>>
-  + void FindDiffNeighbour(out List<T> neighbourList)
+  + void ProduceItem()
   --
 }
-interface ICanProduce {
-  <<MonoBehaviour>>
-  + void ProduceObject()
-  --
-  <<ScriptableObject>>
-  + void List<Recipe> recipeList
-}
-interface ICanTransport {
+interface IStrCanTransport {
   <<MonoBehaviour>>
   + void TransportItem()
   --
-  <<ScriptableObject>>
-  + float transportSpeed
+}
+interface IStrConsumeElectricity {
+  <<MonoBehaviour>>
+  + void ConsumeElectricity()
+  --
+}
+
+'Enemy
+interface IEnCanMove {
+  <<MonoBehaviour>>
+  + void Move()
+  + void ChoosePlaceToMove()
+  --
+}
+interface IEnCanAttack {
+  <<MonoBehaviour>>
+  + void AttackStructure()
+  --
 }
 
 
@@ -63,75 +70,77 @@ class Structure <<MonoBehaviour>> {
   <<MonoBehaviour>>
   # int currHp
   # int direction
-  # Vector2 position
+  # Vector2Int position
 }
-Structure ..|> ICanRemove
-
-class InteractiveObject
-Structure <|-- InteractiveObject
-InteractiveObject ..|> ICanBuild
-InteractiveObject ..|> ICanMove
+Structure ..|> IStrCanRemove
 
 class Obstacle {
   <<ScriptableObject>>
   - int maxHp
-  - Vector2 space
+  - Vector2Int sizeInCells
 }
 Structure <|-- Obstacle
+
+class InteractiveObject
+Structure <|-- InteractiveObject
+InteractiveObject ..|> IStrCanBuild
+InteractiveObject ..|> IStrCanMove
 
 class Wall {
   --
   <<ScriptableObject>>
   - int maxHp
-  - Vector2 space
+  - Vector2Int sizeInCells
 }
 InteractiveObject <|-- Wall
-Wall ..|> IFindSameNeighbour
-
+Wall ..|> IStrFindSameNeighbour
 
 'Transport Structures
 class Belt {
   --
   <<ScriptableObject>>
   - int maxHp
-  - Vector2 space
+  - Vector2Int sizeInCells
+  - float transportSpeed
 }
 InteractiveObject <|-- Belt
-Belt ..|> IFindSameNeighbour
-Belt ..|> ICanTransport
+Belt ..|> IStrFindSameNeighbour
+Belt ..|> IStrCanTransport
+
 class Spliter {
   --
   <<ScriptableObject>>
   - int maxHp
-  - Vector2 space
+  - Vector2Int sizeInCells
+  - float transportSpeed
 }
 InteractiveObject <|-- Spliter
-Spliter ..|> IFindSameNeighbour
-Spliter ..|> ICanTransport
+Spliter ..|> IStrFindSameNeighbour
+Spliter ..|> IStrCanTransport
+
 class Insester {
   --
   <<ScriptableObject>>
   - int maxHp
-  - Vector2 space
+  - Vector2Int sizeInCells
+  - float transportSpeed
 }
 InteractiveObject <|-- Insester
-Insester ..|> IFindSameNeighbour
-Insester ..|> ICanTransport
+Insester ..|> IStrFindSameNeighbour
+Insester ..|> IStrCanTransport
 
 class ElectricPole {
   <<MonoBehaviour>>
   - void GiveElectricity()
-  - void FindAnotherPole()
-  - void FindObjectsToGive()
+  - void ConnectToStructures()
   --
   <<ScriptableObject>>
   - int maxHp
-  - Vector2 space
-  - vec2d actionArea
+  - Vector2Int sizeInCells
+  - Vector2Int coverageArea
 }
-
 InteractiveObject <|-- ElectricPole
-ElectricPole ..|> IFindSameNeighbour
+ElectricPole ..|> IStrFindSameNeighbour
 
 class Turret {
   <<MonoBehaviour>>
@@ -139,15 +148,15 @@ class Turret {
   --
   <<ScriptableObject>>
   - int maxHp
-  - Vector2 space
+  - float damageScale
+  - int consumeElectricityAmount
+  - Vector2Int sizeInCells
+  - List<Item> inputItemList
 }
 InteractiveObject <|-- Turret
-Turret ..|> ICanShoot
-Turret ..|> ICanTake
-Turret ..|> IFindDiffNeighbour
-
-'class Furnace
-'class Assembler
+Turret ..|> IStrCanShoot
+Turret ..|> IStrCanTake
+Turret ..|> IStrConsumeElectricity
 
 class Factory {
   <<MonoBehaviour>>
@@ -155,26 +164,28 @@ class Factory {
   --
   <<ScriptableObject>>
   - int maxHp
-  - Vector2 space
-  - int productMaxSpeed
+  - int consumeElectricityAmount
+  - Vector2Int sizeInCells
+  - List<Item> inputItemList
 }
 InteractiveObject <|-- Factory
-Factory ..|> ICanProduce
-Factory ..|> ICanTake
-Factory ..|> IFindDiffNeighbour
+Factory ..|> IStrCanProduce
+Factory ..|> IStrCanTake
+Factory ..|> IStrConsumeElectricity
 
 class Item <<ScriptableObject>> {
-  # string name
+  # string title
   # Sprite icon
 }
 
 class Recipe <<ScriptableObject>> {
-  # void List<ItemData> inputItems
-  # void List<int> inputCounts
-  # void List<ItemData> outputItems
-  # void List<int> outputCounts
-  # void float productionTime
-  # void float energyCost
+  # List<ItemData> inputItems
+  # List<int> inputCounts
+  # List<ItemData> outputItems
+  # List<int> outputCounts
+  # string title
+  # float productionTime
+  # float electricityCost
 }
 
 class Grid <<MonoBehaviour>> {
@@ -188,5 +199,18 @@ class Grid <<MonoBehaviour>> {
   - float cellSize
   - Vector3 originPosition
 }
+
+class Enemy <<MonoBehaviour>> {
+  <<MonoBehaviour>>
+  - int currHp
+  --
+  <<ScriptableObject>>
+  - string title
+  - int maxHp
+  - float moveSpeed
+  - float attackSpeed
+}
+Enemy ..|> IEnCanMove
+Enemy ..|> IEnCanAttack
 
 @enduml
