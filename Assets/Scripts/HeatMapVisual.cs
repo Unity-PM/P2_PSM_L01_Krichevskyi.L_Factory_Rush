@@ -6,7 +6,7 @@ public class HeatMapVisual : MonoBehaviour
     private Grid grid;
     private Mesh mesh;
 
-    [SerializeField] private Texture2D heatMapTexture; // сюда drag & drop текстуру Black_Red_Yellow_Green
+    [SerializeField] private Texture2D heatMapTexture;
     private Material material;
 
     private void Awake()
@@ -14,7 +14,7 @@ public class HeatMapVisual : MonoBehaviour
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
 
-        material = new Material(Shader.Find("Unlit/Texture")); // простой шейдер для UV
+        material = new Material(Shader.Find("Unlit/Texture"));
         material.mainTexture = heatMapTexture;
         GetComponent<MeshRenderer>().material = material;
     }
@@ -43,7 +43,7 @@ public class HeatMapVisual : MonoBehaviour
             {
                 int gridValue = grid.GetValue(x, z);
                 float gridValueNormalized = (float)gridValue / Grid.HEAT_MAP_MAX_VALUE;
-                Vector2 gridValueUV = new Vector2(gridValueNormalized, 0f); // X координата UV по текстуре
+                Vector2 gridValueUV = new Vector2(gridValueNormalized, 0f);
 
                 int index = x * grid.GetHeight() + z;
                 Vector3 quadSize = new Vector3(1, 1, 1) * grid.GetCellSize();

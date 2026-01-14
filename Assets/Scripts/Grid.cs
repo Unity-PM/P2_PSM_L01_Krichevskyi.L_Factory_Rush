@@ -1,7 +1,8 @@
 using System;
+using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEngine;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 
 public class Grid
 {
@@ -15,12 +16,15 @@ public class Grid
         public int z;
     }
 
-    private int width; 
+    private int width;
     private int height;
     private float cellSize;
     private Vector3 originPosition;
+    private Vector2 maxCoordinates;
     private int[,] gridArray;
     private TextMesh[,] debugTextArray;
+
+    private Dictionary<Vector2Int, StructureScript> objectGrid;
 
     public Grid(int width, int height, float cellSize, Vector3 originPosition)
     {
@@ -31,13 +35,14 @@ public class Grid
 
         gridArray = new int[width, height];
         debugTextArray = new TextMesh[width, height];
+        maxCoordinates = new Vector2(Convert.ToSingle(width) * cellSize + originPosition.x, Convert.ToSingle(height) * cellSize + originPosition.z);
 
         for (int x = 0; x < gridArray.GetLength(0); x++)
         {
             for (int z = 0; z < gridArray.GetLength(1); z++)
             {
                 /*UtilsClass.CreateWorldText(gridArray[x, y].ToString(), null, GetWorldPosition(x, y), 30, Color.white, TextAnchor.MiddleCenter);*/
-                debugTextArray[x, z] = CreateWorldObject(null, gridArray[x,z].ToString(), GetWorldPosition(x, z) + new Vector3(cellSize, 0, cellSize) * 0.5f);
+                debugTextArray[x, z] = CreateWorldObject(null, gridArray[x, z].ToString(), GetWorldPosition(x, z) + new Vector3(cellSize, 0, cellSize) * 0.5f);
                 Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x, z + 1), Color.white, 100f);
                 Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x + 1, z), Color.white, 100f);
             }
@@ -45,12 +50,25 @@ public class Grid
         Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
         Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
 
-        SetValue(0, 1, 56);
+
+        objectGrid = new Dictionary<Vector2Int, StructureScript>();
+
+
+        SetValue(6, 7, 67);
     }
 
     public Vector3 GetWorldPosition(int x, int z)
     {
         return new Vector3(x, 0, z) * cellSize + originPosition;
+    }
+    public Vector3 GetWorldPositionToBuild(int x, int z, Vector2Int prefabSize)
+    {
+        Vector3 returnVector = new Vector3(x, 0, z) * cellSize + originPosition;
+
+        returnVector.x += (cellSize * prefabSize.x) / 2;
+        returnVector.z += (cellSize * prefabSize.y) / 2;
+
+        return returnVector;
     }
 
     private TextMesh CreateWorldObject(Transform parent, string text, Vector3 localPosition /*float cellSize*/)
@@ -66,16 +84,23 @@ public class Grid
         textMesh.anchor = TextAnchor.MiddleCenter;
         TextAlignment textAlignment = TextAlignment.Left;
         textMesh.text = text;
-        textMesh.fontSize = 20;
+        textMesh.fontSize = 5;
         textMesh.color = Color.white;
         textMesh.GetComponent<MeshRenderer>().sortingOrder = 5000;
         return textMesh;
     }
 
-    public void GetXY(Vector3 worldPosition, out int x, out int z)
+    public bool GetXY(Vector3 worldPosition, out int x, out int z)
     {
+        if (worldPosition.x > maxCoordinates.x || worldPosition.x < originPosition.x ||
+            worldPosition.z > maxCoordinates.y || worldPosition.z < originPosition.y)
+        {
+            x = z = -1;
+            return false;
+        }
         x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
         z = Mathf.FloorToInt((worldPosition - originPosition).z / cellSize);
+        return true;
     }
 
     public void SetValue(int x, int z, int value) {
@@ -120,5 +145,26 @@ public class Grid
     public float GetCellSize()
     {
         return cellSize;
+    }
+    public Vector2 GetMaxCoordinates()
+    {
+        return maxCoordinates;
+    }
+    public bool PlaceObject(Vector2Int pos, StructureScript structure)
+    {
+        
+        if (objectGrid.ContainsKey(pos)) return false;
+        objectGrid[pos] = structure;
+        return true;
+    }
+
+    public StructureScript GetObject(Vector2Int pos)
+    {
+        objectGrid.TryGetValue(pos, out StructureScript s);
+        return s;
+    }
+    public bool IsCellEmpty(Vector2Int pos)
+    {
+        return !objectGrid.ContainsKey(pos);
     }
 }

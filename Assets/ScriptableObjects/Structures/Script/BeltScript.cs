@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BeltScript : InteractiveObjectScript, IStrFindSameNeighbour, IStrCanTransport
 {
-    [SerializeField] private WallData data;
+    [SerializeField] public BeltData data;
 
     void Start()
     {
@@ -18,5 +18,6 @@ public class BeltScript : InteractiveObjectScript, IStrFindSameNeighbour, IStrCa
     {
         Debug.Log("FindSameNeighbour() called from BeltScript");
     }
+    
 
 }
