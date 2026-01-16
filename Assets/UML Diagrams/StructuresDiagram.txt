@@ -1,69 +1,80 @@
 @startuml
 !theme mars
-' protected # may also be private with getter
 
 'Structure
-interface IStrCanBuild {
+interface ICanBuild {
   <<MonoBehaviour>>
   + void Build()
   + void CheckPlace()
   --
 }
-interface IStrCanMove {
+interface ICanChangeLocation {
   <<MonoBehaviour>>
   + void Move()
   --
 }
-interface IStrCanRemove {
+interface ICanRemove {
   <<MonoBehaviour>>
   + void Remove()
   --
 }
-interface IStrCanShoot {
+interface ICanShoot {
   <<MonoBehaviour>>
   + Enemy enemy
   + void WatchEnemy()
   + void ShootEnemy()
   --
 }
-interface IStrCanTake {
+interface ICanTake {
   <<MonoBehaviour>>
   + void TakeItem();
   --
 }
-interface IStrFindSameNeighbour {
+interface IFindSameNeighbour {
   <<MonoBehaviour>>
   + void FindSameNeighbour(out List<T> neighbourList)
   --
 }
-interface IStrCanProduce {
+interface ICanProduce {
   <<MonoBehaviour>>
   + void ProduceItem()
   --
 }
-interface IStrCanTransport {
+interface ICanTransport {
   <<MonoBehaviour>>
   + void TransportItem()
   --
 }
-interface IStrConsumeElectricity {
+interface IConsumeElectricity {
   <<MonoBehaviour>>
   + void ConsumeElectricity()
   --
 }
+interface ICanSelect {
+  <<MonoBehaviour>>
+  + void OnSelected()
+  + void OnDeselected()
+  --
+}
+interface ICanRotate {
+  <<MonoBehaviour>>
+  + void Rotate()
+}
+
 
 'Enemy
-interface IEnCanMove {
+interface ICanMove {
   <<MonoBehaviour>>
   + void Move()
   + void ChoosePlaceToMove()
   --
 }
-interface IEnCanAttack {
+interface ICanAttack {
   <<MonoBehaviour>>
   + void AttackStructure()
   --
 }
+
 
 
 class Structure <<MonoBehaviour>> {
@@ -72,7 +83,8 @@ class Structure <<MonoBehaviour>> {
   # int direction
   # Vector2Int position
 }
-Structure ..|> IStrCanRemove
+Structure ..|> ICanRemove
+Structure ..|> ICanSelect
 
 class Obstacle {
   <<ScriptableObject>>
@@ -83,8 +95,8 @@ Structure <|-- Obstacle
 
 class InteractiveObject
 Structure <|-- InteractiveObject
-InteractiveObject ..|> IStrCanBuild
-InteractiveObject ..|> IStrCanMove
+InteractiveObject ..|> ICanBuild
+InteractiveObject ..|> ICanChangeLocation
 
 class Wall {
   --
@@ -93,7 +105,7 @@ class Wall {
   - Vector2Int sizeInCells
 }
 InteractiveObject <|-- Wall
-Wall ..|> IStrFindSameNeighbour
+Wall ..|> IFindSameNeighbour
 
 'Transport Structures
 class Belt {
@@ -104,8 +116,9 @@ class Belt {
   - float transportSpeed
 }
 InteractiveObject <|-- Belt
-Belt ..|> IStrFindSameNeighbour
-Belt ..|> IStrCanTransport
+Belt ..|> IFindSameNeighbour
+Belt ..|> ICanTransport
+Belt ..|> ICanRotate
 
 class Spliter {
   --
@@ -115,8 +128,8 @@ class Spliter {
   - float transportSpeed
 }
 InteractiveObject <|-- Spliter
-Spliter ..|> IStrFindSameNeighbour
-Spliter ..|> IStrCanTransport
+Spliter ..|> IFindSameNeighbour
+Spliter ..|> ICanTransport
 
 class Insester {
   --
@@ -126,8 +139,8 @@ class Insester {
   - float transportSpeed
 }
 InteractiveObject <|-- Insester
-Insester ..|> IStrFindSameNeighbour
-Insester ..|> IStrCanTransport
+Insester ..|> IFindSameNeighbour
+Insester ..|> ICanTransport
 
 class ElectricPole {
   <<MonoBehaviour>>
@@ -140,7 +153,7 @@ class ElectricPole {
   - Vector2Int coverageArea
 }
 InteractiveObject <|-- ElectricPole
-ElectricPole ..|> IStrFindSameNeighbour
+ElectricPole ..|> IFindSameNeighbour
 
 class Turret {
   <<MonoBehaviour>>
@@ -154,9 +167,9 @@ class Turret {
   - List<Item> inputItemList
 }
 InteractiveObject <|-- Turret
-Turret ..|> IStrCanShoot
-Turret ..|> IStrCanTake
-Turret ..|> IStrConsumeElectricity
+Turret ..|> ICanShoot
+Turret ..|> ICanTake
+Turret ..|> IConsumeElectricity
 
 class Factory {
   <<MonoBehaviour>>
@@ -169,9 +182,9 @@ class Factory {
   - List<Item> inputItemList
 }
 InteractiveObject <|-- Factory
-Factory ..|> IStrCanProduce
-Factory ..|> IStrCanTake
-Factory ..|> IStrConsumeElectricity
+Factory ..|> ICanProduce
+Factory ..|> ICanTake
+Factory ..|> IConsumeElectricity
 
 class Item <<ScriptableObject>> {
   # string title
@@ -210,7 +223,7 @@ class Enemy <<MonoBehaviour>> {
   - float moveSpeed
   - float attackSpeed
 }
-Enemy ..|> IEnCanMove
-Enemy ..|> IEnCanAttack
+Enemy ..|> ICanMove
+Enemy ..|> ICanAttack
 
 @enduml

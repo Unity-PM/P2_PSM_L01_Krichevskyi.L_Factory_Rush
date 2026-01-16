@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BeltScript : InteractiveObjectScript, IStrFindSameNeighbour, IStrCanTransport
+public class BeltScript : InteractiveObjectScript, IStrFindSameNeighbour, IStrCanTransport, ICanRotate
 {
     [SerializeField] public BeltData data;
 
@@ -19,5 +19,14 @@ public class BeltScript : InteractiveObjectScript, IStrFindSameNeighbour, IStrCa
         Debug.Log("FindSameNeighbour() called from BeltScript");
     }
     
+    public void Rotate()
+    {
+        Debug.Log("Rotate() called from BeltScript");
+    }
+
+    public override string GetDisplayName()
+    {
+        return data.title;
+    }
 
 }

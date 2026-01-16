@@ -4,8 +4,9 @@ using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-public class Grid
+public class GridScript : IStrCanRemove
 {
+
     public const int HEAT_MAP_MAX_VALUE = 100;
     public const int HEAT_MAP_MIN_VALUE = 0;
 
@@ -26,7 +27,7 @@ public class Grid
 
     private Dictionary<Vector2Int, StructureScript> objectGrid;
 
-    public Grid(int width, int height, float cellSize, Vector3 originPosition)
+    public GridScript(int width, int height, float cellSize, Vector3 originPosition)
     {
         this.width = width;
         this.height = height;
@@ -152,10 +153,23 @@ public class Grid
     }
     public bool PlaceObject(Vector2Int pos, StructureScript structure)
     {
-        
         if (objectGrid.ContainsKey(pos)) return false;
         objectGrid[pos] = structure;
+        structure.SetPosition(pos);
         return true;
+    }
+    public void RemoveObject(Vector2Int pos)
+    {
+        Debug.Log("Remove() called from GridScript");
+
+        if (!objectGrid.TryGetValue(pos, out StructureScript s))
+            return;
+
+        SelectionManager.Instance.Deselect(s);
+        objectGrid.Remove(pos);
+        GameObject.Destroy(s.gameObject);
+        Debug.Log("Object got removed");
+
     }
 
     public StructureScript GetObject(Vector2Int pos)
@@ -163,8 +177,18 @@ public class Grid
         objectGrid.TryGetValue(pos, out StructureScript s);
         return s;
     }
+    public StructureScript GetObject(int gridX, int gridY)
+    {
+        Vector2Int gridVec = new Vector2Int(gridX, gridY);
+        return GetObject(gridVec);
+    }
     public bool IsCellEmpty(Vector2Int pos)
     {
         return !objectGrid.ContainsKey(pos);
+    }
+    public bool IsCellEmpty(int gridX, int gridY)
+    {
+        Vector2Int gridVec = new Vector2Int (gridX, gridY);
+        return IsCellEmpty(gridVec);
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class HeatMapVisual : MonoBehaviour
 {
-    private Grid grid;
+    private GridScript grid;
     private Mesh mesh;
 
     [SerializeField] private Texture2D heatMapTexture;
@@ -19,14 +19,14 @@ public class HeatMapVisual : MonoBehaviour
         GetComponent<MeshRenderer>().material = material;
     }
 
-    public void SetGrid(Grid grid)
+    public void SetGrid(GridScript grid)
     {
         this.grid = grid;
         UpdateHeatMapVisual();
         grid.OnGridValueChanged += Grid_OnGridValueChanged;
     }
 
-    private void Grid_OnGridValueChanged(object sender, Grid.OnGridValueChangedEventArgs e)
+    private void Grid_OnGridValueChanged(object sender, GridScript.OnGridValueChangedEventArgs e)
     {
         UpdateHeatMapVisual();
     }
@@ -42,7 +42,7 @@ public class HeatMapVisual : MonoBehaviour
             for (int z = 0; z < grid.GetHeight(); z++)
             {
                 int gridValue = grid.GetValue(x, z);
-                float gridValueNormalized = (float)gridValue / Grid.HEAT_MAP_MAX_VALUE;
+                float gridValueNormalized = (float)gridValue / GridScript.HEAT_MAP_MAX_VALUE;
                 Vector2 gridValueUV = new Vector2(gridValueNormalized, 0f);
 
                 int index = x * grid.GetHeight() + z;

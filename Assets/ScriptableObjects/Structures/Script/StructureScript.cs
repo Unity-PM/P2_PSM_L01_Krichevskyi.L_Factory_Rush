@@ -1,13 +1,37 @@
 using UnityEngine;
 
-public class StructureScript : MonoBehaviour, IStrCanRemove
+public class StructureScript : MonoBehaviour, ICanSelect
 {
     protected int currHp = 50;
     protected int direction = 1;
-    protected Vector2Int position;
+    [SerializeField] protected Vector2Int position = new Vector2Int(-1,-1);
 
-    public void Remove()
+    public virtual string GetDisplayName()
     {
-        Debug.Log("Remove() called from StructureScript");
+        return gameObject.name;
     }
+    public void SetPosition(Vector2Int pos)
+    {
+        position = pos;
+    }
+    public int GetX()
+    {
+        return position.x;
+    }
+    public int GetZ()
+    {
+        return position.y;
+    }
+
+
+    public void OnSelected()
+    {
+        //Debug.Log("OnSelected() called from StructureScript");
+    }
+
+    public void OnDeselected()
+    {
+        //Debug.Log("OnDeselected() called from StructureScript");
+    }
+
 }

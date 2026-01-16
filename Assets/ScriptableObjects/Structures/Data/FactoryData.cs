@@ -4,6 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Factory", menuName = "Scriptable Objects/Structure/Factory")]
 public class FactoryData : ScriptableObject
 {
+    public string title = "Factory";
     public int maxHp = 700;
     public Vector2Int sizeInCells = new Vector2Int(3, 3);
     public float productionSpeedScale = 1.0f;

@@ -22,4 +22,9 @@ public class FactoryScript : InteractiveObjectScript, IStrCanProduce, IStrCanTak
     {
         Debug.Log("ConsumeElectricity() called from FactoryScript");
     }
+
+    public override string GetDisplayName()
+    {
+        return data.title;
+    }
 }

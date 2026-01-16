@@ -10,7 +10,7 @@ public class BuildManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         
     }
 
-    bool Tick()
+    /*bool Tick()
     {
         timer += Time.deltaTime;
 
@@ -35,7 +35,7 @@ public class BuildManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
         print("Test call");
         
-    }
+    }*/
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -45,7 +45,5 @@ public class BuildManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void OnPointerExit(PointerEventData eventData)
     {
         print("POINTER EXIT");
-
-        
     }
 }

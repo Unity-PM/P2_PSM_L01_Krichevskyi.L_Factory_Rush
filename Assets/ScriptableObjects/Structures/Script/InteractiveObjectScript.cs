@@ -4,9 +4,9 @@ using static UnityEngine.Analytics.IAnalytic;
 
 public class InteractiveObjectScript : StructureScript, IStrCanBuild, IStrCanMove
 {
-    public virtual void Build(GameObject prefab, Vector3 clickedPlace, Grid grid)
+    public virtual void Build(GameObject prefab, Vector3 clickedPlace, GridScript grid)
     {
-        Debug.Log("Build() called from InteractiveObjectScript");
+        //Debug.Log("Build() called from InteractiveObjectScript");
 
         Vector2Int prefabSize;
         if (prefab.name.StartsWith("Belt")) { prefabSize = prefab.GetComponent<BeltScript>().data.sizeInCells; }
@@ -34,9 +34,9 @@ public class InteractiveObjectScript : StructureScript, IStrCanBuild, IStrCanMov
             Debug.LogWarning("You can't build here!");
         }
     }
-    public bool CheckPlace(GameObject prefab, Vector3 clickedPlace, Grid grid, Vector2Int prefabSize, out int clickedX, out int clickedZ)
+    public bool CheckPlace(GameObject prefab, Vector3 clickedPlace, GridScript grid, Vector2Int prefabSize, out int clickedX, out int clickedZ)
     {
-        Debug.Log("CheckPlace() called from InteractiveObjectScript");
+        //Debug.Log("CheckPlace() called from InteractiveObjectScript");
 
         bool isInGrid = grid.GetXY(clickedPlace, out clickedX, out clickedZ);
         Vector2Int inVectorPosition = new Vector2Int(clickedX, clickedZ);

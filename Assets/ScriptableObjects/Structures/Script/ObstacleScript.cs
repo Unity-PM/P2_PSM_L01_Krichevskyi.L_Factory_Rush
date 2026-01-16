@@ -8,7 +8,6 @@ public class ObstacleScript : StructureScript
     {
         currHp = data.maxHp;
         direction = 1;
-        Remove();
     }
 
 
