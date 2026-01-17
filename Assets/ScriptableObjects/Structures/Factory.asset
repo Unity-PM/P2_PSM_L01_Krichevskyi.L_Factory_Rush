@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 984035b4804b917478cf61ba0f5e5afa, type: 3}
   m_Name: Factory
   m_EditorClassIdentifier: Assembly-CSharp::FactoryData
+  title: Factory
   maxHp: 700
   sizeInCells: {x: 2, y: 2}
   productionSpeedScale: 1

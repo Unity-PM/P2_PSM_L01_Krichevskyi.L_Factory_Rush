@@ -22,7 +22,7 @@ public class SelectionManager : MonoBehaviour
 
     public void Deselect(StructureScript s)
     {
-        if (!selected.Contains(s)) return;
+        if (!selected.Contains(s) || selected.Count == 0) return;
         Debug.Log($"{s.GetDisplayName()} just got deselected");
         s.OnDeselected();
         selected.Remove(s);
@@ -30,6 +30,9 @@ public class SelectionManager : MonoBehaviour
 
     public void DeselectAll()
     {
+        if (selected.Count == 0)
+            return;
+
         var copy = new List<StructureScript>(selected);
 
         foreach (var s in copy)
@@ -52,7 +55,7 @@ public class SelectionManager : MonoBehaviour
 
         foreach (var s in selected)
         {
-            returnSelectPos.Add(new Vector2Int(s.GetX(), s.GetZ()));
+            returnSelectPos.Add(s.GetPositions()[0]);
         }
 
         return returnSelectPos;

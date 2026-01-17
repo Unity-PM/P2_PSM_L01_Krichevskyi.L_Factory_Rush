@@ -25,7 +25,7 @@ public class GridScript : IStrCanRemove
     private int[,] gridArray;
     private TextMesh[,] debugTextArray;
 
-    private Dictionary<Vector2Int, StructureScript> objectGrid;
+    [SerializeField] private Dictionary<Vector2Int, StructureScript> objectGrid;
 
     public GridScript(int width, int height, float cellSize, Vector3 originPosition)
     {
@@ -154,8 +154,9 @@ public class GridScript : IStrCanRemove
     public bool PlaceObject(Vector2Int pos, StructureScript structure)
     {
         if (objectGrid.ContainsKey(pos)) return false;
+
+        
         objectGrid[pos] = structure;
-        structure.SetPosition(pos);
         return true;
     }
     public void RemoveObject(Vector2Int pos)
@@ -168,7 +169,6 @@ public class GridScript : IStrCanRemove
         SelectionManager.Instance.Deselect(s);
         objectGrid.Remove(pos);
         GameObject.Destroy(s.gameObject);
-        Debug.Log("Object got removed");
 
     }
 

@@ -1,26 +1,28 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class StructureScript : MonoBehaviour, ICanSelect
 {
     protected int currHp = 50;
     protected int direction = 1;
-    [SerializeField] protected Vector2Int position = new Vector2Int(-1,-1);
+    [SerializeField] protected List<Vector2Int> occupiedPositions = new List<Vector2Int>();
 
     public virtual string GetDisplayName()
     {
         return gameObject.name;
     }
-    public void SetPosition(Vector2Int pos)
+    public virtual Vector2Int GetSizeInCells()
     {
-        position = pos;
+        Vector2Int vec = new Vector2Int(1, 1);
+        return vec;
     }
-    public int GetX()
+    public void SetPositions(List<Vector2Int> positions)
     {
-        return position.x;
+        occupiedPositions = positions;
     }
-    public int GetZ()
+    public List<Vector2Int> GetPositions()
     {
-        return position.y;
+        return occupiedPositions;
     }
 
 

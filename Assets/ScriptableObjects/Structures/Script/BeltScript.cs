@@ -28,5 +28,9 @@ public class BeltScript : InteractiveObjectScript, IStrFindSameNeighbour, IStrCa
     {
         return data.title;
     }
+    public override Vector2Int GetSizeInCells()
+    {
+        return data.sizeInCells;
+    }
 
 }

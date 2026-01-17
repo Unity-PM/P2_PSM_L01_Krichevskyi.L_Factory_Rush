@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
 using static UnityEngine.Analytics.IAnalytic;
@@ -21,10 +22,20 @@ public class InteractiveObjectScript : StructureScript, IStrCanBuild, IStrCanMov
             StructureScript structure = obj.GetComponent<StructureScript>();
             for (int x = 0; x < prefabSize.x; x++)
             {
+                List<Vector2Int> pos = new List<Vector2Int>();
                 for (int z = 0; z < prefabSize.y; z++)
                 {
-                    Vector2Int pos = new Vector2Int(clickedX + x, clickedZ + z);
-                    grid.PlaceObject(pos, structure);
+                    for (int i = 0; i < structure.GetSizeInCells().x; i++)
+                    {
+                        for (int j = 0; j < structure.GetSizeInCells().y; j++)
+                        {
+                            pos.Add(new Vector2Int(clickedX + x, clickedZ + z));
+                            //Debug.Log($"Object was added to grid");
+                        }
+                    }
+                    structure.SetPositions(pos);
+
+                    grid.PlaceObject(pos[0], structure);
                 }
             }
 
