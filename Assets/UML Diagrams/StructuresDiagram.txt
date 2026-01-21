@@ -4,18 +4,18 @@
 'Structure
 interface ICanBuild {
   <<MonoBehaviour>>
-  + void Build()
-  + void CheckPlace()
+  + void BuildStructure()
+  + bool CheckPlace()
   --
 }
 interface ICanChangeLocation {
   <<MonoBehaviour>>
-  + void Move()
+  + void MoveStructure()
   --
 }
 interface ICanRemove {
   <<MonoBehaviour>>
-  + void Remove()
+  + void RemoveStructure()
   --
 }
 interface ICanShoot {
@@ -30,9 +30,9 @@ interface ICanTake {
   + void TakeItem();
   --
 }
-interface IFindSameNeighbour {
+interface IFindNeighbour {
   <<MonoBehaviour>>
-  + void FindSameNeighbour(out List<T> neighbourList)
+  + void FindSameNeighbour()
   --
 }
 interface ICanProduce {
@@ -58,7 +58,7 @@ interface ICanSelect {
 }
 interface ICanRotate {
   <<MonoBehaviour>>
-  + void Rotate()
+  + void RotateStructure()
 }
 
 
@@ -66,7 +66,7 @@ interface ICanRotate {
 interface ICanMove {
   <<MonoBehaviour>>
   + void Move()
-  + void ChoosePlaceToMove()
+  + void ChooseDestination()
   --
 }
 interface ICanAttack {
@@ -81,9 +81,12 @@ class Structure <<MonoBehaviour>> {
   <<MonoBehaviour>>
   # int currHp
   # int direction
-  # Vector2Int position
+  # List<Vector2Int> occupiedPositions
+  --
+  <<ScriptableObject>>
+  + int maxHp
+  + Vector2Int sizeInCells
 }
-Structure ..|> ICanRemove
 Structure ..|> ICanSelect
 
 class Obstacle {
@@ -95,8 +98,6 @@ Structure <|-- Obstacle
 
 class InteractiveObject
 Structure <|-- InteractiveObject
-InteractiveObject ..|> ICanBuild
-InteractiveObject ..|> ICanChangeLocation
 
 class Wall {
   --
@@ -105,7 +106,7 @@ class Wall {
   - Vector2Int sizeInCells
 }
 InteractiveObject <|-- Wall
-Wall ..|> IFindSameNeighbour
+Wall ..|> IFindNeighbour
 
 'Transport Structures
 class Belt {
@@ -116,9 +117,8 @@ class Belt {
   - float transportSpeed
 }
 InteractiveObject <|-- Belt
-Belt ..|> IFindSameNeighbour
+Belt ..|> IFindNeighbour
 Belt ..|> ICanTransport
-Belt ..|> ICanRotate
 
 class Spliter {
   --
@@ -128,7 +128,7 @@ class Spliter {
   - float transportSpeed
 }
 InteractiveObject <|-- Spliter
-Spliter ..|> IFindSameNeighbour
+Spliter ..|> IFindNeighbour
 Spliter ..|> ICanTransport
 
 class Insester {
@@ -139,7 +139,7 @@ class Insester {
   - float transportSpeed
 }
 InteractiveObject <|-- Insester
-Insester ..|> IFindSameNeighbour
+Insester ..|> IFindNeighbour
 Insester ..|> ICanTransport
 
 class ElectricPole {
@@ -153,7 +153,7 @@ class ElectricPole {
   - Vector2Int coverageArea
 }
 InteractiveObject <|-- ElectricPole
-ElectricPole ..|> IFindSameNeighbour
+ElectricPole ..|> IFindNeighbour
 
 class Turret {
   <<MonoBehaviour>>
@@ -164,11 +164,9 @@ class Turret {
   - float damageScale
   - int consumeElectricityAmount
   - Vector2Int sizeInCells
-  - List<Item> inputItemList
 }
 InteractiveObject <|-- Turret
 Turret ..|> ICanShoot
-Turret ..|> ICanTake
 Turret ..|> IConsumeElectricity
 
 class Factory {
@@ -185,11 +183,7 @@ InteractiveObject <|-- Factory
 Factory ..|> ICanProduce
 Factory ..|> ICanTake
 Factory ..|> IConsumeElectricity
-
-class Item <<ScriptableObject>> {
-  # string title
-  # Sprite icon
-}
+Factory --> Recipe
 
 class Recipe <<ScriptableObject>> {
   # List<ItemData> inputItems
@@ -199,6 +193,12 @@ class Recipe <<ScriptableObject>> {
   # string title
   # float productionTime
   # float electricityCost
+}
+Recipe --> ItemData
+
+class ItemData <<ScriptableObject>> {
+  # string title
+  # Sprite icon
 }
 
 class Grid <<MonoBehaviour>> {
@@ -212,6 +212,7 @@ class Grid <<MonoBehaviour>> {
   - float cellSize
   - Vector3 originPosition
 }
+Grid --> Structure
 
 class Enemy <<MonoBehaviour>> {
   <<MonoBehaviour>>
@@ -225,5 +226,32 @@ class Enemy <<MonoBehaviour>> {
 }
 Enemy ..|> ICanMove
 Enemy ..|> ICanAttack
+
+
+'CardSystem
+class CardSystem <<MonoBehaviour>> {
+  + List<<CardData>> deckList
+  - void PlaceCard()
+  - void CreateGhostStructure()
+  
+}
+CardSystem --> CardData
+class CardData <<ScriptableObject>> {
+  + prefab prefab
+}
+
+
+class BuildSystem <<MonoBehaviour>> {
+  + static BuildSystem Instance
+  - PlaceStructure(Vector3 worldPosition)
+  - void Build()
+  - bool CheckPlace()
+  - void Move()
+}
+BuildSystem ..|> ICanBuild
+BuildSystem ..|> ICanChangeLocation
+BuildSystem ..|> ICanRemove
+BuildSystem ..|> ICanRotate
+
 
 @enduml

@@ -25,7 +25,7 @@ public class GridScript : IStrCanRemove
     private int[,] gridArray;
     private TextMesh[,] debugTextArray;
 
-    [SerializeField] private Dictionary<Vector2Int, StructureScript> objectGrid;
+    private Dictionary<Vector2Int, StructureScript> objectGrid;
 
     public GridScript(int width, int height, float cellSize, Vector3 originPosition)
     {
