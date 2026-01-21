@@ -7,35 +7,42 @@ using UnityEngine.InputSystem;
 
 public class GridManager : MonoBehaviour
 {
-    public static GridManager Instance;
-
-    void Awake()
-    {
-        Instance = this;
-    }
-
     public GameObject beltPrefab;
     public GameObject factoryPrefab;
 
     private GridScript grid;
     [SerializeField] private HeatMapVisual heatMapVisual;
     [SerializeField] private GridDebugViewer gridDebugViewer;
-    char keySelectedInstrument;
+
+    public static event Action GridManagerLoaded;
+
     void Start()
     {
         grid = new GridScript(8,12,1f, new Vector3(0,0,0));
+        Debug.Log("Hi from GridManager file!");
         heatMapVisual.SetGrid(grid);
         gridDebugViewer.SetGrid(grid);
-        keySelectedInstrument = ' '; //active "key" on the keyboard
+
+        GridManagerLoaded?.Invoke();
+
     }
+
+    public GridScript GetGrid() { return grid; }
 
     void Update()
     {
-        if (Input.anyKeyDown)
+        /*if (Input.anyKeyDown)
         {
             KeyPressed();
-        }
+        }*/
 
+        
+        
+
+    }
+
+    void OtherFunction()
+    {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitData;
 
@@ -49,7 +56,7 @@ public class GridManager : MonoBehaviour
                 if (grid.IsCellEmpty(gridX, gridZ))
                 {
                     SelectionManager.Instance.DeselectAll();
-                    PlaceStructure(clickedPlace);
+                    /*PlaceStructure(clickedPlace);*/
                 }
                 else
                 {
@@ -58,15 +65,13 @@ public class GridManager : MonoBehaviour
                     StructureScript structure = grid.GetObject(gridX, gridZ);
                     SelectionManager.Instance.Select(structure);
                 }
-                    
-            }
-            
-        }
-        
 
+            }
+
+        }
     }
 
-    void KeyPressed()
+    /*void KeyPressed()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -107,11 +112,7 @@ public class GridManager : MonoBehaviour
 
         if (prefabObject != null)
         {
-            prefabObject.GetComponent<InteractiveObjectScript>().Build(prefabObject, worldPosition, grid);
+            *//*prefabObject.GetComponent<InteractiveObjectScript>().Build(prefabObject, worldPosition, grid);*//*
         }
-    }
-    public void SelectStructure()
-    {
-        
-    }
+    }*/
 }

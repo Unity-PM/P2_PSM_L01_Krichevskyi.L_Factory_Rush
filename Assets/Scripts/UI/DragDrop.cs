@@ -2,17 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler {
 
     [SerializeField] private Canvas canvas;
+    [SerializeField] private CardData card; // карта, которую перетаскиваем
 
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
+    private Transform originalParent;
+    
+    private void Awake()
+    {
+        CursorManager.CursorManagerLoaded += Load;
+    }
+    private void Load() {
+        /*Image image = GetComponent<Image>();
+        image.sprite = card.icon;*/
 
-    private void Awake() {
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
+        originalParent = transform.parent; 
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
@@ -30,6 +41,28 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
         Debug.Log("OnEndDrag");
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
+
+        // Попытка построить объект
+        if (BuildManager.Instance != null)
+        {
+            Vector3 worldPos = CursorManager.Instance.GetCursorWorldPosition(); // на уровне сетки
+            Debug.Log($"Coordinates: {worldPos.x} and {worldPos.z}");
+
+            bool built = BuildManager.Instance.PlaceObject(card, worldPos);
+            if (!built)
+            {
+                // если не получилось поставить — вернуть карту в слот
+                rectTransform.SetParent(originalParent, false);
+                rectTransform.anchoredPosition = Vector2.zero;
+            }
+            else
+            {
+                rectTransform.SetParent(originalParent, false);
+                rectTransform.anchoredPosition = Vector2.zero;
+                // если построили, карту можно скрыть или удалить
+                /*Destroy(gameObject);*/
+            }
+        }
     }
 
     public void OnPointerDown(PointerEventData eventData) {

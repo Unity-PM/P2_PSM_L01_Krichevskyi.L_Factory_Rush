@@ -3,9 +3,9 @@ using System.Drawing;
 using UnityEngine;
 using static UnityEngine.Analytics.IAnalytic;
 
-public class InteractiveObjectScript : StructureScript, IStrCanBuild, IStrCanMove
+public class InteractiveObjectScript : StructureScript
 {
-    public virtual void Build(GameObject prefab, Vector3 clickedPlace, GridScript grid)
+    /*public virtual void Build(GameObject prefab, Vector3 clickedPlace, GridScript grid)
     {
         //Debug.Log("Build() called from InteractiveObjectScript");
 
@@ -72,7 +72,8 @@ public class InteractiveObjectScript : StructureScript, IStrCanBuild, IStrCanMov
         }
 
         return true;
-    }
+    }*/
+    
 
     public void Move()
     {
