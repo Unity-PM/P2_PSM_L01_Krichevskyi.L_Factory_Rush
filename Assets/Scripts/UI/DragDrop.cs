@@ -9,6 +9,8 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
     [SerializeField] private Canvas canvas;
     [SerializeField] private CardData card; // карта, которую перетаскиваем
 
+    public CardSystem cardSystem;
+
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private Transform originalParent;
@@ -48,7 +50,7 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
             Vector3 worldPos = CursorManager.Instance.GetCursorWorldPosition(); // на уровне сетки
             Debug.Log($"Coordinates: {worldPos.x} and {worldPos.z}");
 
-            bool built = BuildManager.Instance.PlaceObject(card, worldPos);
+            bool built = BuildManager.Instance.PlaceObject(card, worldPos); //!!!
             if (!built)
             {
                 // если не получилось поставить — вернуть карту в слот

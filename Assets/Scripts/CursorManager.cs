@@ -1,5 +1,6 @@
-using UnityEngine;
 using System;
+using UnityEditor;
+using UnityEngine;
 
 public class CursorManager : MonoBehaviour
 {
@@ -30,6 +31,31 @@ public class CursorManager : MonoBehaviour
         return Vector3.zero;
     }
 
-    
+    private void Update()
+    {
+        if (BuildManager.Instance.IsBuilding())
+            return;
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 worldPosition = GetCursorWorldPosition();
+            if (grid.GetXY(worldPosition, out int gridX, out int gridZ))
+            {
+                if (grid.IsCellEmpty(gridX, gridZ))
+                {
+                    SelectionManager.Instance.DeselectAll();
+                }
+                else
+                {
+                    if (!Input.GetKey(KeyCode.LeftControl)) { SelectionManager.Instance.DeselectAll(); }
+
+                    StructureScript structure = grid.GetObject(gridX, gridZ);
+                    SelectionManager.Instance.Select(structure);
+                }
+
+            }
+
+        }
+    }
 
 }

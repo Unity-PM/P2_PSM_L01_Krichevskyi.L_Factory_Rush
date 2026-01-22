@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class HandViewScript : MonoBehaviour
 {
-    [SerializeField] float cardSpacing = 70f;
+    /*[SerializeField] float cardSpacing = 70f;
     [SerializeField] float fanAngle = 10f;
     [SerializeField] float radius = 400f;
 
@@ -20,9 +20,9 @@ public class HandViewScript : MonoBehaviour
     {
         cards.Remove(card);
         UpdateLayout();
-    }
+    }*/
 
-    public void UpdateLayout()
+    /*public void UpdateLayout()
     {
         int count = cards.Count;
         for (int i = 0; i < count; i++)
@@ -35,6 +35,6 @@ public class HandViewScript : MonoBehaviour
             card.localPosition = pos;
             card.localRotation = Quaternion.Euler(0, 0, angle);
         }
-    }
+    }*/
 }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEngine.Rendering.GPUSort;
 
 public class ItemSlot : MonoBehaviour, IDropHandler {
 
@@ -15,5 +16,5 @@ public class ItemSlot : MonoBehaviour, IDropHandler {
         dragRT.anchoredPosition = Vector2.zero;
     }
 
-
+    
 }

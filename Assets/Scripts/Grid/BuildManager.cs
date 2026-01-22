@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class BuildManager : MonoBehaviour, IStrCanBuild, IStrCanMove
 {
     public static BuildManager Instance;
+
     public GridManager gridManager;
     private GridScript grid;
 
@@ -11,12 +13,7 @@ public class BuildManager : MonoBehaviour, IStrCanBuild, IStrCanMove
     private CardData activeCard;
     private bool isBuilding = false;
 
-    private void Awake()
-    {
-        GridManager.GridManagerLoaded += Load;
-    }
-
-    private void Load()
+    private void Start()
     {
         Instance = this;
 
@@ -121,6 +118,10 @@ public class BuildManager : MonoBehaviour, IStrCanBuild, IStrCanMove
         }
 
         return true;
+    }
+    public void RemoveObject(Vector2Int pos)
+    {
+        grid.RemoveObject(pos);
     }
     public void MoveObject()
     {

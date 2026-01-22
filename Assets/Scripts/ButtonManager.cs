@@ -1,0 +1,29 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ButtonManager : MonoBehaviour
+{
+    void Update()
+    {
+        if (Input.anyKeyDown)
+        {
+            KeyPressed();
+        }
+    }
+
+
+    private void KeyPressed()
+    {
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            if (SelectionManager.Instance.GetSelectedCount() == 0)
+                return;
+
+            List<Vector2Int> copyXZ = SelectionManager.Instance.GetAllPosition();
+            foreach (var xz in copyXZ)
+            {
+                BuildManager.Instance.RemoveObject(xz);
+            }
+        }
+    }
+}
