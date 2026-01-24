@@ -7,31 +7,31 @@ using UnityEngine.UI;
 public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler {
 
     [SerializeField] private Canvas canvas;
-    [SerializeField] private CardData card; // карта, которую перетаскиваем
-
-    public CardSystem cardSystem;
+    [SerializeField] private CardScript card; // карта, которую перетаскиваем
 
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private Transform originalParent;
     
-    private void Awake()
-    {
-        CursorManager.CursorManagerLoaded += Load;
-    }
-    private void Load() {
+    private void Start() {
         /*Image image = GetComponent<Image>();
         image.sprite = card.icon;*/
 
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
-        originalParent = transform.parent; 
+        canvas = GetComponentInParent<Canvas>();
+        originalParent = transform.parent;
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
         Debug.Log("OnBeginDrag");
         canvasGroup.alpha = .6f;
         canvasGroup.blocksRaycasts = false;
+
+        originalParent = transform.parent;
+
+        card.ownerHand.TakeCard(card);
+        transform.SetParent(canvas.transform, true);
     }
 
     public void OnDrag(PointerEventData eventData) {
@@ -45,26 +45,23 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
         canvasGroup.blocksRaycasts = true;
 
         // Попытка построить объект
-        if (BuildManager.Instance != null)
-        {
-            Vector3 worldPos = CursorManager.Instance.GetCursorWorldPosition(); // на уровне сетки
-            Debug.Log($"Coordinates: {worldPos.x} and {worldPos.z}");
+        Vector3 worldPos = CursorManager.Instance.GetCursorWorldPosition(); // на уровне сетки
+        Debug.Log($"Coordinates: {worldPos.x} and {worldPos.z}");
 
-            bool built = BuildManager.Instance.PlaceObject(card, worldPos); //!!!
-            if (!built)
-            {
-                // если не получилось поставить — вернуть карту в слот
-                rectTransform.SetParent(originalParent, false);
-                rectTransform.anchoredPosition = Vector2.zero;
-            }
-            else
-            {
-                rectTransform.SetParent(originalParent, false);
-                rectTransform.anchoredPosition = Vector2.zero;
-                // если построили, карту можно скрыть или удалить
-                /*Destroy(gameObject);*/
-            }
+        bool built = BuildManager.Instance.PlaceObject(card.data, worldPos);
+        if (!built)
+        {
+            rectTransform.SetParent(originalParent, false);
+            rectTransform.anchoredPosition = Vector2.zero;
+            card.ownerHand.PutCard(card);
+
         }
+        else
+        {
+            CardSystem.Instance.RemoveCardFromHand(card);
+        }
+
+
     }
 
     public void OnPointerDown(PointerEventData eventData) {

@@ -1,26 +1,53 @@
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class CardSystem : MonoBehaviour
 {
-    public GridManager gridManager;
-    private GridScript grid;
+    public static CardSystem Instance;
 
-    private List<CardData> deckList = new List<CardData>();
+    [SerializeField] private HandViewScript handView;
+
+    private List<CardScript> handCards = new List<CardScript>(); // текущие карты в руке
 
     /*public static event Action CardSystemLoaded;*/
 
-    private void Start()
+    void Start()
     {
-        grid = gridManager.GetGrid();
+        Instance = this;
+
         /*CardSystemLoaded?.Invoke();*/
     }
 
+    // Спавним новую карту в руку
+    public void SpawnCard(GameObject cardPrefab)
+    {
+        GameObject cardObj = Instantiate(cardPrefab, handView.transform);
+        CardScript cardScript = cardObj.GetComponent<CardScript>();
+        if (cardScript == null) return;
 
+        cardScript.ownerHand = handView;
 
+        handCards.Add(cardScript);
+        handView.AddCard(cardScript);
+    }
 
+    public void RemoveCardFromHand(CardScript card)
+    {
+        if (handCards.Contains(card))
+        {
+            handCards.Remove(card);
+            handView.RemoveCard(card);
+            Destroy(card.gameObject);
+        }
+    }
 
+    // Можно добавить метод, который спавнит несколько карт сразу
+    public void SpawnMultipleCards(List<GameObject> prefabs)
+    {
+        foreach (var prefab in prefabs)
+        {
+            SpawnCard(prefab);
+        }
+    }
 }

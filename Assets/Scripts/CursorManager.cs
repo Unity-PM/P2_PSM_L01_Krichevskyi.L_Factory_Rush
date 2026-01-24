@@ -17,6 +17,7 @@ public class CursorManager : MonoBehaviour
         grid = gridManager.GetGrid();
 
         CursorManagerLoaded?.Invoke();
+        Debug.Log("I'm inside of Start() of CursorManager");
     }
 
     public Vector3 GetCursorWorldPosition()

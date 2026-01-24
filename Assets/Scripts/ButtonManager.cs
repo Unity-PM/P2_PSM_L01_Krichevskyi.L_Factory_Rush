@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class ButtonManager : MonoBehaviour
 {
+    [SerializeField] private GameObject beltPref;
+
     void Update()
     {
         if (Input.anyKeyDown)
@@ -24,6 +26,10 @@ public class ButtonManager : MonoBehaviour
             {
                 BuildManager.Instance.RemoveObject(xz);
             }
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            CardSystem.Instance.SpawnCard(beltPref);
         }
     }
 }
