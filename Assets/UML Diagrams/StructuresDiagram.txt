@@ -1,5 +1,4 @@
-ICanShoot --> Enemy : use functions
-
+@enduml
 @startuml
 !theme mars
 
@@ -22,12 +21,12 @@ interface ICanRemove {
 }
 interface ICanShoot {
   <<MonoBehaviour>>
-  + Enemy enemy
+  + EnemyScript enemy
   + void WatchEnemy()
   + void ShootEnemy()
   --
 }
-ICanShoot --> Enemy : use functions
+ICanShoot --> EnemyScript : use functions
 interface ICanTake {
   <<MonoBehaviour>>
   + void TakeItem();
@@ -46,6 +45,7 @@ interface ICanProduce {
 interface ICanTransport {
   <<MonoBehaviour>>
   + void TransportItem()
+  + float transportSpeed
   --
 }
 interface IConsumeElectricity {
@@ -62,6 +62,9 @@ interface ICanSelect {
 interface ICanRotate {
   <<MonoBehaviour>>
   + void RotateStructure()
+}
+interface IDamageable {
+  + void TakeDamage(int amount)
 }
 
 
@@ -93,6 +96,7 @@ class Structure <<MonoBehaviour>> {
 Structure ..|> ICanSelect
 Structure ..|> ICanRemove
 Structure ..|> ICanRotate
+Structure ..|> IDamageable
 
 class Obstacle {
   <<ScriptableObject>>
@@ -115,13 +119,13 @@ class Wall {
 InteractiveObject <|-- Wall
 Wall ..|> IFindNeighbour
 
+
 'Transport Structures
 class Belt {
   --
   <<ScriptableObject>>
   - int maxHp
   - Vector2Int sizeInCells
-  - float transportSpeed
 }
 InteractiveObject <|-- Belt
 Belt ..|> IFindNeighbour
@@ -132,7 +136,6 @@ class Spliter {
   <<ScriptableObject>>
   - int maxHp
   - Vector2Int sizeInCells
-  - float transportSpeed
 }
 InteractiveObject <|-- Spliter
 Spliter ..|> IFindNeighbour
@@ -143,7 +146,6 @@ class Insester {
   <<ScriptableObject>>
   - int maxHp
   - Vector2Int sizeInCells
-  - float transportSpeed
 }
 InteractiveObject <|-- Insester
 Insester ..|> IFindNeighbour
@@ -164,7 +166,7 @@ ElectricPole ..|> IFindNeighbour
 
 class Turret {
   <<MonoBehaviour>>
-  - Enemy enemy
+  - EnemyScript enemy
   --
   <<ScriptableObject>>
   - int maxHp
@@ -175,7 +177,7 @@ class Turret {
 InteractiveObject <|-- Turret
 Turret ..|> ICanShoot
 Turret ..|> IConsumeElectricity
-Turret --> Enemy : use functions
+Turret --> EnemyScript : use functions
 
 class Factory {
   <<MonoBehaviour>>
@@ -193,6 +195,8 @@ Factory ..|> ICanTake
 Factory ..|> IConsumeElectricity
 Factory --> Recipe
 
+
+'Items
 class Recipe <<ScriptableObject>> {
   # List<ItemData> inputItems
   # List<int> inputCounts
@@ -209,6 +213,8 @@ class ItemData <<ScriptableObject>> {
   # Sprite icon
 }
 
+
+'Grid
 class Grid <<MonoBehaviour>> {
   <<MonoBehaviour>>
   - int[,] gridArray
@@ -222,18 +228,63 @@ class Grid <<MonoBehaviour>> {
 }
 Grid --> Structure
 
-class Enemy <<MonoBehaviour>> {
+
+'Enemy
+class EnemyScript <<MonoBehaviour>> {
   <<MonoBehaviour>>
+  + EnemyData data
   - int currHp
+  -- Modules --
+  + EnemyChooseActionScript chooseAction
+  + EnemyMovementScript movement
+  + EnemyAttackScript attack
+  + EnemyAnimationScript animation
   --
-  <<ScriptableObject>>
-  - string title
-  - int maxHp
-  - float moveSpeed
-  - float attackSpeed
 }
-Enemy ..|> ICanMove
-Enemy ..|> ICanAttack
+EnemyScript ..|> ICanMove
+EnemyScript ..|> ICanAttack
+
+class EnemyData <<ScriptableObject>> {
+  + string title
+  + int maxHp
+  + float moveSpeed
+  + List<PriorityGroup> priorities
+}
+EnemyScript <-- EnemyData
+EnemyData <-- PriorityGroup
+
+class PriorityGroup <<SerializableStruct>> {
+  + StructureScript type
+  + float weight
+}
+
+class EnemyChooseActionScript <<MonoBehaviour>> {
+  - IDamageable currentTarget
+  + void Tnhink()
+}
+class EnemyMovementScript <<MonoBehaviour>> {
+  - NavMeshAgent agent
+  + void MoveTo(Vector3 position)
+  + void Stop()
+}
+class EnemyAttackScript <<MonoBehaviour>> {
+  + void Attack(IDamageable target)
+  - float attackCooldown
+}
+class EnemyAnimationScript <<MonoBehaviour>> {
+  + void PlayAttack()
+  + void SetMoveSpeed(float speed)
+}
+
+' Relations
+EnemyScript *-- EnemyChooseActionScript
+EnemyScript *-- EnemyMovementScript
+EnemyScript *-- EnemyAttackScript
+EnemyScript *-- EnemyAnimationScript
+EnemyChooseActionScript --> EnemyMovementScript : commands
+EnemyChooseActionScript --> EnemyAttackScript : commands
+EnemyAttackScript --> IDamageable : damages
+
 
 
 'CardSystem
@@ -248,6 +299,7 @@ class CardData <<ScriptableObject>> {
   + prefab prefab
 }
 CardSystem --> BuildSystem : uses function
+
 
 
 class BuildSystem <<MonoBehaviour>> {
