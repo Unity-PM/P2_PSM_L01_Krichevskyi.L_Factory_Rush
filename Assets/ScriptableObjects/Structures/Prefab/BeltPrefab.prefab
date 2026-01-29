@@ -50,7 +50,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 1298ca5b572a3cb4da0072fe5d85ce1d, type: 3}
       propertyPath: m_Name
-      value: conveyor-bars-stripe-high (1)
+      value: BeltPrefab
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -77,4 +77,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c85e8ba6899f54ab4e4f9a5b9c5b41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BeltScript
+  occupiedPositions: []
   data: {fileID: 11400000, guid: 850fb6598fe899542ab879c2c06dc106, type: 2}

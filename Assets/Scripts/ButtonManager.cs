@@ -4,6 +4,7 @@ using UnityEngine;
 public class ButtonManager : MonoBehaviour
 {
     [SerializeField] private GameObject beltPref;
+    [SerializeField] private GameObject factoryPref;
 
     void Update()
     {
@@ -30,6 +31,10 @@ public class ButtonManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             CardSystem.Instance.SpawnCard(beltPref);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            CardSystem.Instance.SpawnCard(factoryPref);
         }
     }
 }

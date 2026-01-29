@@ -6027,7 +6027,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f37efce764e6a5845bbfe338ef45b20e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.5
+      value: -8.73
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f37efce764e6a5845bbfe338ef45b20e, type: 3}
       propertyPath: m_LocalPosition.y
@@ -12971,6 +12971,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ButtonManager
   beltPref: {fileID: 6790703023961177314, guid: ff0577a8f4798ba4dbad836e7e115521, type: 3}
+  factoryPref: {fileID: 1311445141119979158, guid: d08e6a0e5e8ce744e9291b66e8636209, type: 3}
 --- !u!4 &2001411200
 Transform:
   m_ObjectHideFlags: 0
@@ -13018,7 +13019,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 65c41c477876b6446b8fbd1c9764ac64, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2
+      value: -5.23
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 65c41c477876b6446b8fbd1c9764ac64, type: 3}
       propertyPath: m_LocalPosition.y

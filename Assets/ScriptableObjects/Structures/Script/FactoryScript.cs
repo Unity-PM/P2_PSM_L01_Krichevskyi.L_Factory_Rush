@@ -27,4 +27,8 @@ public class FactoryScript : InteractiveObjectScript, IStrCanProduce, IStrCanTak
     {
         return data.title;
     }
+    public override Vector2Int GetSizeInCells()
+    {
+        return data.sizeInCells;
+    }
 }
