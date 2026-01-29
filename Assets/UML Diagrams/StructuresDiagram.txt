@@ -1,32 +1,15 @@
+
+
 @enduml
 @startuml
 !theme mars
 
 'Structure
-interface ICanBuild {
-  <<MonoBehaviour>>
-  + void BuildStructure()
-  + bool CheckPlace()
-  --
-}
-interface ICanChangeLocation {
-  <<MonoBehaviour>>
-  + void MoveStructure()
-  --
-}
 interface ICanRemove {
   <<MonoBehaviour>>
   + void RemoveStructure()
   --
 }
-interface ICanShoot {
-  <<MonoBehaviour>>
-  + EnemyScript enemy
-  + void WatchEnemy()
-  + void ShootEnemy()
-  --
-}
-ICanShoot --> EnemyScript : use functions
 interface ICanTake {
   <<MonoBehaviour>>
   + void TakeItem();
@@ -66,7 +49,11 @@ interface ICanRotate {
 interface IDamageable {
   + void TakeDamage(int amount)
 }
-
+interface ICanAttack {
+  <<MonoBehaviour>>
+  + void AttackUnit()
+  --
+}
 
 'Enemy
 interface ICanMove {
@@ -75,13 +62,14 @@ interface ICanMove {
   + void ChooseDestination()
   --
 }
-interface ICanAttack {
-  <<MonoBehaviour>>
-  + void AttackStructure()
+
+
+class Unit {
   --
+  <<ScriptableObject>>
+  + GameObject prefab
+  + int maxHp
 }
-
-
 
 class Structure <<MonoBehaviour>> {
   <<MonoBehaviour>>
@@ -93,6 +81,7 @@ class Structure <<MonoBehaviour>> {
   + int maxHp
   + Vector2Int sizeInCells
 }
+Unit <|-- Structure
 Structure ..|> ICanSelect
 Structure ..|> ICanRemove
 Structure ..|> ICanRotate
@@ -105,10 +94,13 @@ class Obstacle {
 }
 Structure <|-- Obstacle
 
-class InteractiveObject
+class InteractiveObject {
+  <<MonoBehaviour>>
+  + void BuildStructure()
+  + bool CheckPlace()
+  + void MoveStructure()
+}
 Structure <|-- InteractiveObject
-InteractiveObject ..|> ICanBuild
-InteractiveObject ..|> ICanChangeLocation
 
 class Wall {
   --
@@ -175,9 +167,8 @@ class Turret {
   - Vector2Int sizeInCells
 }
 InteractiveObject <|-- Turret
-Turret ..|> ICanShoot
+Turret ..|> ICanAttack
 Turret ..|> IConsumeElectricity
-Turret --> EnemyScript : use functions
 
 class Factory {
   <<MonoBehaviour>>
@@ -229,6 +220,16 @@ class Grid <<MonoBehaviour>> {
 Grid --> Structure
 
 
+'Creature
+class Creature {
+  --
+  <<ScriptableObject>>
+  # float walkSpeed
+}
+Unit <|-- Creature
+Creature ..|> ICanMove
+Creature ..|> IDamageable
+
 'Enemy
 class EnemyScript <<MonoBehaviour>> {
   <<MonoBehaviour>>
@@ -241,7 +242,7 @@ class EnemyScript <<MonoBehaviour>> {
   + EnemyAnimationScript animation
   --
 }
-EnemyScript ..|> ICanMove
+Creature <|-- EnemyScript
 EnemyScript ..|> ICanAttack
 
 class EnemyData <<ScriptableObject>> {
@@ -283,7 +284,6 @@ EnemyScript *-- EnemyAttackScript
 EnemyScript *-- EnemyAnimationScript
 EnemyChooseActionScript --> EnemyMovementScript : commands
 EnemyChooseActionScript --> EnemyAttackScript : commands
-EnemyAttackScript --> IDamageable : damages
 
 
 

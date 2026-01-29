@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CursorManager : MonoBehaviour
 {
@@ -30,6 +32,14 @@ public class CursorManager : MonoBehaviour
             return new Vector3(hitData.point.x, 0, hitData.point.z);
 
         return Vector3.zero;
+    }
+    public List<RaycastResult> GetUIComponentsList()
+    {
+        PointerEventData pointerData = new PointerEventData(EventSystem.current) { position = Input.mousePosition };
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, results);
+
+        return results;
     }
 
     private void Update()

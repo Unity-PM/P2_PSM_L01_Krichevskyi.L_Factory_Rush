@@ -28,8 +28,13 @@ public class CardSystem : MonoBehaviour
 
         cardScript.ownerHand = handView;
 
-        handCards.Add(cardScript);
-        handView.AddCard(cardScript);
+        int cardsCount = handCards.Count;
+        if (cardsCount == 0) { handCards.Add(cardScript); }
+        else { handCards.Insert(cardsCount, cardScript); }
+            
+
+
+        handView.AddCard(cardScript, cardsCount);
     }
 
     public void RemoveCardFromHand(CardScript card)

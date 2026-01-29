@@ -6,21 +6,25 @@ public class HandViewScript : MonoBehaviour
     [SerializeField] float cardSpacing = 70f;
     [SerializeField] float fanAngle = 10f;
     [SerializeField] float radius = 400f;
-
+    
     private float coeff = 0.7f;
 
 
     private List<CardScript> cards = new List<CardScript>();
     private CardScript pickedCard;
 
+    public int GetCardsCount() { return cards.Count; }
+
     private void Start()
     {
         pickedCard = null;
     }
 
-    public void AddCard(CardScript card)
+    public void AddCard(CardScript card, int index)
     {
-        cards.Add(card);
+        if (index == 0) { cards.Add(card); }
+        else { cards.Insert(index, card); }
+            
         card.Rect.SetParent(transform, false);
         UpdateLayout();
     }
@@ -30,9 +34,12 @@ public class HandViewScript : MonoBehaviour
         pickedCard = card;
         RemoveCard(card);
     }
-    public void PutCard(CardScript card)
+    public void PutCard(CardScript card, int index)
     {
-        AddCard(card);
+        if (index == -1)
+            index = cards.Count;
+
+        AddCard(card, index);
         pickedCard = null;
     }
     public void RemoveCard(CardScript card)
@@ -63,6 +70,11 @@ public class HandViewScript : MonoBehaviour
         }
 
         Canvas.ForceUpdateCanvases();
+    }
+
+    public int GetCardIndex(CardScript card)
+    {
+        return cards.IndexOf(card);
     }
     public int GetCardPosition(int index, bool toAddCard)
     {
