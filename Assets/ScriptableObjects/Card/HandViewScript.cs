@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,9 @@ public class HandViewScript : MonoBehaviour
     [SerializeField] float radius = 400f;
     [SerializeField] public float verticalThreshold = 100f;
     [SerializeField] public float verticalThresholdGhost = 70f;
+
+    [SerializeField] float layoutSpeed = 10f;
+    private Coroutine layoutCoroutine;
 
     private int? previewIndex = null;
     private float coeff = 0.7f;
@@ -27,8 +31,8 @@ public class HandViewScript : MonoBehaviour
         if (cards.Count == 0) { cards.Add(card); Debug.Log("Add first card to the deck"); }
         else if (index == -1) { cards.Insert(0, card); }
         else { cards.Insert(index, card); }
-            
-        card.Rect.SetParent(transform, false);
+
+        card.Rect.SetParent(transform, true);
         UpdateLayout();
     }
 
@@ -53,31 +57,10 @@ public class HandViewScript : MonoBehaviour
         int baseCount = cards.Count;
         if (baseCount == 0 && previewIndex == null) return;
 
-        // Считаем общее кол-во мест (карты + дырка)
-        int totalSlots = previewIndex != null ? baseCount + 1 : baseCount;
-
-        float totalWidth = (totalSlots - 1) * cardSpacing * coeff;
-        float startX = -totalWidth / 2f;
-
-        int cardIdx = 0; // Реальный индекс карты в списке List<CardScript>
-        for (int i = 0; i < totalSlots; i++)
-        {
-            // Если текущее место занято превью-дыркой, просто идем дальше, 
-            // не увеличивая индекс карты
-            if (previewIndex != null && i == previewIndex) continue;
-
-            // Если мы уже распределили все карты, а места еще остались (защита)
-            if (cardIdx >= baseCount) break;
-
-            float xPos = startX + (i * cardSpacing * coeff);
-
-            cards[cardIdx].Rect.localPosition = new Vector2(xPos, 0);
-            cards[cardIdx].Rect.localRotation = Quaternion.identity;
-
-            cardIdx++; // Переходим к следующей физической карте
-        }
-
-        Canvas.ForceUpdateCanvases();
+        // Мы больше не ставим позиции здесь вручную! 
+        // Просто перезапускаем аниматор, который все сделает плавно.
+        if (layoutCoroutine != null) StopCoroutine(layoutCoroutine);
+        layoutCoroutine = StartCoroutine(AnimateLayout());
     }
 
     public int GetIndexByLocalX(float localX)
@@ -126,6 +109,50 @@ public class HandViewScript : MonoBehaviour
         if (previewIndex == index) return;
         previewIndex = index;
         UpdateLayout();
+    }
+
+    private IEnumerator AnimateLayout()
+    {
+        bool allAtTarget = false;
+
+        while (!allAtTarget)
+        {
+            allAtTarget = true;
+            int baseCount = cards.Count;
+            // Считаем актуальное кол-во слотов с учетом превью
+            int totalSlots = previewIndex.HasValue ? baseCount + 1 : baseCount;
+
+            float step = cardSpacing * coeff;
+            float startX = -((totalSlots - 1) * step) / 2f;
+
+            int cardIdx = 0;
+            for (int i = 0; i < totalSlots; i++)
+            {
+                // Пропускаем индекс превью (дырку)
+                if (previewIndex.HasValue && i == previewIndex.Value) continue;
+                if (cardIdx >= baseCount) break;
+
+                // Целевая позиция для текущей карты
+                Vector3 targetPos = new Vector3(startX + (i * step), 0, 0);
+                RectTransform cardRect = cards[cardIdx].Rect;
+
+                // Плавное движение
+                cardRect.localPosition = Vector3.Lerp(cardRect.localPosition, targetPos, Time.deltaTime * layoutSpeed);
+                cardRect.localRotation = Quaternion.Slerp(cardRect.localRotation, Quaternion.identity, Time.deltaTime * layoutSpeed);
+
+                // Если хоть одна карта еще не долетела (порог 0.1 для Lerp лучше чем 0.01)
+                if (Vector3.Distance(cardRect.localPosition, targetPos) > 0.1f)
+                {
+                    allAtTarget = false;
+                }
+
+                cardIdx++;
+            }
+
+            yield return null;
+        }
+
+        layoutCoroutine = null;
     }
 
     public int GetCardPosition(int index, bool toAddCard)

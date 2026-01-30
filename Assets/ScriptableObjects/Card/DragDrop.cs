@@ -61,6 +61,7 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
         canvasGroup.blocksRaycasts = true;
 
 
+        card.ownerHand.SetPreviewIndex(null);
 
         // Попытка построить объект
         Vector3 worldPos = CursorManager.Instance.GetCursorWorldPosition(); // на уровне сетки
@@ -69,21 +70,17 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
         bool built = BuildManager.Instance.PlaceObject(card.data, worldPos);
         if (!built)
         {
-            rectTransform.SetParent(originalParent, false);
-            rectTransform.anchoredPosition = Vector2.zero;
+            rectTransform.SetParent(originalParent, true);
+
+            /*Vector3 dropPosition = rectTransform.position;*/
 
             int hoveredCardIndex = GetHoveredCardIndex();
-            Debug.Log($"Card with {hoveredCardIndex} index is under cursor");
-
             card.ownerHand.PutCard(card, hoveredCardIndex);
         }
         else
         {
             CardSystem.Instance.RemoveCardFromHand(card);
         }
-
-        card.ownerHand.SetPreviewIndex(null);
-
     }
 
     public void OnPointerDown(PointerEventData eventData) {
