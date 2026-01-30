@@ -6,9 +6,11 @@ public class HandViewScript : MonoBehaviour
     [SerializeField] float cardSpacing = 70f;
     [SerializeField] float fanAngle = 10f;
     [SerializeField] float radius = 400f;
-    
-    private float coeff = 0.7f;
+    [SerializeField] public float verticalThreshold = 100f;
+    [SerializeField] public float verticalThresholdGhost = 70f;
 
+    private int? previewIndex = null;
+    private float coeff = 0.7f;
 
     private List<CardScript> cards = new List<CardScript>();
     private CardScript pickedCard;
@@ -48,23 +50,31 @@ public class HandViewScript : MonoBehaviour
 
     public void UpdateLayout()
     {
-        int count = cards.Count;
+        int baseCount = cards.Count;
+        if (baseCount == 0 && previewIndex == null) return;
 
-        // Вычисляем общую ширину ряда (количество промежутков * размер отступа)
-        float totalWidth = (count - 1) * cardSpacing * coeff;
-        // Находим левый край, чтобы ряд был центрирован
+        // Считаем общее кол-во мест (карты + дырка)
+        int totalSlots = previewIndex != null ? baseCount + 1 : baseCount;
+
+        float totalWidth = (totalSlots - 1) * cardSpacing * coeff;
         float startX = -totalWidth / 2f;
 
-        for (int i = 0; i < count; i++)
+        int cardIdx = 0; // Реальный индекс карты в списке List<CardScript>
+        for (int i = 0; i < totalSlots; i++)
         {
-            // Каждая карта смещается вправо от старта на i шагов
+            // Если текущее место занято превью-дыркой, просто идем дальше, 
+            // не увеличивая индекс карты
+            if (previewIndex != null && i == previewIndex) continue;
+
+            // Если мы уже распределили все карты, а места еще остались (защита)
+            if (cardIdx >= baseCount) break;
+
             float xPos = startX + (i * cardSpacing * coeff);
 
-            // Опционально: добавляем небольшой изгиб по Y, чтобы не было совсем плоско
-            float yPos = 0;
+            cards[cardIdx].Rect.localPosition = new Vector2(xPos, 0);
+            cards[cardIdx].Rect.localRotation = Quaternion.identity;
 
-            cards[i].Rect.localPosition = new Vector2(xPos, yPos);
-            cards[i].Rect.localRotation = Quaternion.identity; // Сбрасываем вращение для ровного ряда
+            cardIdx++; // Переходим к следующей физической карте
         }
 
         Canvas.ForceUpdateCanvases();
@@ -73,15 +83,49 @@ public class HandViewScript : MonoBehaviour
     public int GetIndexByLocalX(float localX)
     {
         int count = cards.Count;
+        // Если карт нет, единственная позиция — 0
         if (count == 0) return 0;
 
-        float totalWidth = (count - 1) * cardSpacing * coeff;
+        float step = cardSpacing * coeff;
+        float totalWidth = (count - 1) * step;
         float startX = -totalWidth / 2f;
 
-        float step = cardSpacing * coeff;
-        int index = Mathf.CeilToInt(((localX - startX) / step) + 0.5f);
+        // RoundToInt находит ближайшее целое число. 
+        // Если ты ближе к левому краю первой карты, он выдаст 0.
+        // Если ближе к правому краю последней — выдаст count.
+        float relativeX = localX - (startX - step / 2f);
+        int cardUnderCursor = Mathf.FloorToInt(relativeX / step);
 
-        return Mathf.Clamp(index, -1, count);
+        // 2. Всегда возвращаем индекс этой карты + 1 (т.е. позицию справа).
+        int index = cardUnderCursor + 1;
+
+        // Ограничиваем строго от 0 до текущего количества карт
+        return Mathf.Clamp(index, 0, count);
+    }
+
+    public bool IsPointerOverHand(Vector2 localPoint)
+    {
+        int count = cards.Count;
+        // Если карт нет, разрешаем зону размером с одну карту в центре
+        float currentWidth = count > 0 ? (count - 1) * cardSpacing * coeff : cardSpacing;
+
+        // Границы по X (с небольшим запасом в пол-карты)
+        float paddingX = (cardSpacing * coeff) * 2;
+        bool overX = localPoint.x >= (-currentWidth / 2f - paddingX) &&
+                     localPoint.x <= (currentWidth / 2f + paddingX);
+
+        // Границы по Y (используем твою переменную)
+        bool overY = Mathf.Abs(localPoint.y) <= verticalThresholdGhost;
+
+        //
+        return overX && overY;
+    }
+
+    public void SetPreviewIndex(int? index)
+    {
+        if (previewIndex == index) return;
+        previewIndex = index;
+        UpdateLayout();
     }
 
     public int GetCardPosition(int index, bool toAddCard)

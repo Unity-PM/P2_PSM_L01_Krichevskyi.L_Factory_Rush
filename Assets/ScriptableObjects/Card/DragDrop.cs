@@ -38,7 +38,21 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
     public void OnDrag(PointerEventData eventData) {
         //Debug.Log("OnDrag");
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
-        
+
+        RectTransform handRect = card.ownerHand.GetComponent<RectTransform>();
+        Vector2 localPoint;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(handRect, Input.mousePosition, canvas.worldCamera, out localPoint);
+
+        if (card.ownerHand.IsPointerOverHand(localPoint))
+        {
+            int hoveredIndex = card.ownerHand.GetIndexByLocalX(localPoint.x);
+            card.ownerHand.SetPreviewIndex(hoveredIndex);
+        }
+        else
+        {
+            card.ownerHand.SetPreviewIndex(null);
+        }
+
     }
 
     public void OnEndDrag(PointerEventData eventData) {
@@ -68,6 +82,7 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
             CardSystem.Instance.RemoveCardFromHand(card);
         }
 
+        card.ownerHand.SetPreviewIndex(null);
 
     }
 
@@ -87,9 +102,8 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
             out localPoint
         );
 
-        float verticalThreshold = 100f;
 
-        if (Mathf.Abs(localPoint.y) > verticalThreshold)
+        if (Mathf.Abs(localPoint.y) > card.ownerHand.verticalThreshold)
             return card.ownerHand.GetCardsCount();
 
         return card.ownerHand.GetIndexByLocalX(localPoint.x);
