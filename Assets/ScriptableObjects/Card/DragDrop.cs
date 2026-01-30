@@ -59,7 +59,7 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
             rectTransform.anchoredPosition = Vector2.zero;
 
             int hoveredCardIndex = GetHoveredCardIndex();
-            /*Debug.Log($"{cardUnderCursor.data.name} is under cursor");*/
+            Debug.Log($"Card with {hoveredCardIndex} index is under cursor");
 
             card.ownerHand.PutCard(card, hoveredCardIndex);
         }
@@ -72,30 +72,27 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
     }
 
     public void OnPointerDown(PointerEventData eventData) {
-        Debug.Log("OnPointerDown");
+        /*Debug.Log("OnPointerDown");*/
     }
 
     private int GetHoveredCardIndex()
     {
-        int returnIndex = -1;
+        RectTransform handRect = card.ownerHand.GetComponent<RectTransform>();
+        Vector2 localPoint;
 
-        List<RaycastResult> results = CursorManager.Instance.GetUIComponentsList();
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            handRect,
+            Input.mousePosition,
+            canvas.worldCamera,
+            out localPoint
+        );
 
-        foreach (var result in results)
-        {
-            // Ищем скрипт карты в объекте или его родителях
-            var targetCard = result.gameObject.GetComponentInParent<CardScript>();
+        float verticalThreshold = 100f;
 
-            // Возвращаем, если это не та карта, которую мы сейчас тянем
-            if (targetCard != null && targetCard.gameObject != gameObject)
-            {
-                Debug.Log($"Cursor hovering {targetCard.name} card");
-                returnIndex = card.ownerHand.GetCardIndex(targetCard);
-                Debug.Log($"Index of hovering card is {returnIndex}");
-                break;
-            }
-        }
-        return ++returnIndex;
+        if (Mathf.Abs(localPoint.y) > verticalThreshold)
+            return card.ownerHand.GetCardsCount();
+
+        return card.ownerHand.GetIndexByLocalX(localPoint.x);
     }
 
 }

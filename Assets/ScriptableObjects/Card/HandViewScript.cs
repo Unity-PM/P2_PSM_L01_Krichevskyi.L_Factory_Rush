@@ -22,7 +22,8 @@ public class HandViewScript : MonoBehaviour
 
     public void AddCard(CardScript card, int index)
     {
-        if (index == 0) { cards.Add(card); }
+        if (cards.Count == 0) { cards.Add(card); Debug.Log("Add first card to the deck"); }
+        else if (index == -1) { cards.Insert(0, card); }
         else { cards.Insert(index, card); }
             
         card.Rect.SetParent(transform, false);
@@ -36,9 +37,6 @@ public class HandViewScript : MonoBehaviour
     }
     public void PutCard(CardScript card, int index)
     {
-        if (index == -1)
-            index = cards.Count;
-
         AddCard(card, index);
         pickedCard = null;
     }
@@ -72,10 +70,20 @@ public class HandViewScript : MonoBehaviour
         Canvas.ForceUpdateCanvases();
     }
 
-    public int GetCardIndex(CardScript card)
+    public int GetIndexByLocalX(float localX)
     {
-        return cards.IndexOf(card);
+        int count = cards.Count;
+        if (count == 0) return 0;
+
+        float totalWidth = (count - 1) * cardSpacing * coeff;
+        float startX = -totalWidth / 2f;
+
+        float step = cardSpacing * coeff;
+        int index = Mathf.CeilToInt(((localX - startX) / step) + 0.5f);
+
+        return Mathf.Clamp(index, -1, count);
     }
+
     public int GetCardPosition(int index, bool toAddCard)
     {
         int count = cards.Count;
