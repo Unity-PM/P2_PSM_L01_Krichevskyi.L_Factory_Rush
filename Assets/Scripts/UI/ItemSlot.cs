@@ -12,8 +12,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler {
 
         RectTransform dragRT = eventData.pointerDrag.GetComponent<RectTransform>();
 
-        dragRT.SetParent(transform, false);
-        dragRT.anchoredPosition = Vector2.zero;
+        dragRT.SetParent(transform, true);
     }
 
     

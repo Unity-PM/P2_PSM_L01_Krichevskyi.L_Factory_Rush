@@ -70,10 +70,6 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
         bool built = BuildManager.Instance.PlaceObject(card.data, worldPos);
         if (!built)
         {
-            rectTransform.SetParent(originalParent, true);
-
-            /*Vector3 dropPosition = rectTransform.position;*/
-
             int hoveredCardIndex = GetHoveredCardIndex();
             card.ownerHand.PutCard(card, hoveredCardIndex);
         }
@@ -81,6 +77,8 @@ public class DragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
         {
             CardSystem.Instance.RemoveCardFromHand(card);
         }
+
+        card.ownerHand.SetPreviewIndex(null);
     }
 
     public void OnPointerDown(PointerEventData eventData) {

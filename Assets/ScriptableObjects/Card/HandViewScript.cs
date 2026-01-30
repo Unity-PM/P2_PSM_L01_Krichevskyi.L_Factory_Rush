@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
 
 public class HandViewScript : MonoBehaviour
@@ -9,6 +10,7 @@ public class HandViewScript : MonoBehaviour
     [SerializeField] float radius = 400f;
     [SerializeField] public float verticalThreshold = 100f;
     [SerializeField] public float verticalThresholdGhost = 70f;
+    [SerializeField] public float ySpawn = -70f;
 
     [SerializeField] float layoutSpeed = 10f;
     private Coroutine layoutCoroutine;
@@ -28,11 +30,18 @@ public class HandViewScript : MonoBehaviour
 
     public void AddCard(CardScript card, int index)
     {
+        Vector3 worldPosBeforeParentChange = card.Rect.position;
+
         if (cards.Count == 0) { cards.Add(card); Debug.Log("Add first card to the deck"); }
         else if (index == -1) { cards.Insert(0, card); }
         else { cards.Insert(index, card); }
 
-        card.Rect.SetParent(transform, true);
+        if (card.Rect.parent != transform)
+        {
+            card.Rect.SetParent(transform, true);
+            card.Rect.position = worldPosBeforeParentChange;
+        }
+
         UpdateLayout();
     }
 
@@ -57,8 +66,6 @@ public class HandViewScript : MonoBehaviour
         int baseCount = cards.Count;
         if (baseCount == 0 && previewIndex == null) return;
 
-        // Мы больше не ставим позиции здесь вручную! 
-        // Просто перезапускаем аниматор, который все сделает плавно.
         if (layoutCoroutine != null) StopCoroutine(layoutCoroutine);
         layoutCoroutine = StartCoroutine(AnimateLayout());
     }
@@ -66,23 +73,17 @@ public class HandViewScript : MonoBehaviour
     public int GetIndexByLocalX(float localX)
     {
         int count = cards.Count;
-        // Если карт нет, единственная позиция — 0
         if (count == 0) return 0;
 
         float step = cardSpacing * coeff;
         float totalWidth = (count - 1) * step;
         float startX = -totalWidth / 2f;
 
-        // RoundToInt находит ближайшее целое число. 
-        // Если ты ближе к левому краю первой карты, он выдаст 0.
-        // Если ближе к правому краю последней — выдаст count.
         float relativeX = localX - (startX - step / 2f);
         int cardUnderCursor = Mathf.FloorToInt(relativeX / step);
 
-        // 2. Всегда возвращаем индекс этой карты + 1 (т.е. позицию справа).
         int index = cardUnderCursor + 1;
 
-        // Ограничиваем строго от 0 до текущего количества карт
         return Mathf.Clamp(index, 0, count);
     }
 
@@ -155,31 +156,31 @@ public class HandViewScript : MonoBehaviour
         layoutCoroutine = null;
     }
 
-    public int GetCardPosition(int index, bool toAddCard)
+    public Vector2 GetCardPosition(int index, bool toAddCard)
     {
         int count = cards.Count;
         if (count == 0)
-            return 0;
+        {
+            if (toAddCard) { return new Vector2(0, ySpawn); }
+            else { return new Vector2(0, ySpawn); }
+        }
 
         if (toAddCard)
             count++;
-        // Вычисляем общую ширину ряда (количество промежутков * размер отступа)
+
         float totalWidth = (count - 1) * cardSpacing * coeff;
-        // Находим левый край, чтобы ряд был центрирован
         float startX = -totalWidth / 2f;
 
 
-        // Каждая карта смещается вправо от старта на i шагов
         float xPos = startX + (index * cardSpacing * coeff);
 
-        // Опционально: добавляем небольшой изгиб по Y, чтобы не было совсем плоско
-        float yPos = 0;
+        float yPos = ySpawn;
 
-        cards[index].Rect.localPosition = new Vector2(xPos, yPos);
-        cards[index].Rect.localRotation = Quaternion.identity; // Сбрасываем вращение для ровного ряда
+        /*cards[index].Rect.localPosition = new Vector2(xPos, yPos);*/
+        /*cards[index].Rect.localRotation = Quaternion.identity;*/
 
 
-        return 1;
+        return new Vector2(xPos, yPos);
     }
 }
 

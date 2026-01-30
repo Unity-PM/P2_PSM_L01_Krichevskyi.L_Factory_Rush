@@ -27,8 +27,10 @@ public class CardSystem : MonoBehaviour
         if (cardScript == null) return;
 
         cardScript.ownerHand = handView;
-
         int cardsCount = handCards.Count;
+
+        cardScript.Rect.localPosition = handView.GetCardPosition(cardsCount, true);
+
         if (cardsCount == 0) { handCards.Add(cardScript); }
         else { handCards.Insert(cardsCount, cardScript); }
             
