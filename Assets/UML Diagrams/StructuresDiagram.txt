@@ -1,15 +1,7 @@
-
-
-@enduml
 @startuml
 !theme mars
 
 'Structure
-interface ICanRemove {
-  <<MonoBehaviour>>
-  + void RemoveStructure()
-  --
-}
 interface ICanTake {
   <<MonoBehaviour>>
   + void TakeItem();
@@ -46,13 +38,8 @@ interface ICanRotate {
   <<MonoBehaviour>>
   + void RotateStructure()
 }
-interface IDamageable {
-  + void TakeDamage(int amount)
-}
-interface ICanAttack {
-  <<MonoBehaviour>>
-  + void AttackUnit()
-  --
+interface ICanRelocate {
+  void RelocateStructure()
 }
 
 'Enemy
@@ -63,82 +50,66 @@ interface ICanMove {
   --
 }
 
+'General
+interface ICanAttack {
+  <<MonoBehaviour>>
+  + void AttackUnit()
+  --
+}
+interface IDamageable {
+  + void TakeDamage(int amount)
+}
+
 
 class Unit {
+  <<MonoBehaviour>>
+  + currHp
+  + virtual string GetDisplayName()
   --
   <<ScriptableObject>>
-  + GameObject prefab
   + int maxHp
 }
+GridScript --> Unit
 
 class Structure <<MonoBehaviour>> {
   <<MonoBehaviour>>
-  # int currHp
   # int direction
   # List<Vector2Int> occupiedPositions
+  + virtual Vector2Int GetSizeInCells()
+  + void SetPositions(List<Vector2Int> positions)
+  + List<Vector2Int> GetPositions()
   --
   <<ScriptableObject>>
-  + int maxHp
   + Vector2Int sizeInCells
 }
 Unit <|-- Structure
 Structure ..|> ICanSelect
-Structure ..|> ICanRemove
-Structure ..|> ICanRotate
 Structure ..|> IDamageable
 
-class Obstacle {
-  <<ScriptableObject>>
-  - int maxHp
-  - Vector2Int sizeInCells
-}
+class Obstacle
 Structure <|-- Obstacle
 
-class InteractiveObject {
-  <<MonoBehaviour>>
-  + void BuildStructure()
-  + bool CheckPlace()
-  + void MoveStructure()
-}
+class InteractiveObject
 Structure <|-- InteractiveObject
+InteractiveObject ..|> ICanRotate
+InteractiveObject ..|> ICanRelocate
 
-class Wall {
-  --
-  <<ScriptableObject>>
-  - int maxHp
-  - Vector2Int sizeInCells
-}
+class Wall
 InteractiveObject <|-- Wall
 Wall ..|> IFindNeighbour
 
-
 'Transport Structures
-class Belt {
-  --
-  <<ScriptableObject>>
-  - int maxHp
-  - Vector2Int sizeInCells
-}
+class Belt
 InteractiveObject <|-- Belt
 Belt ..|> IFindNeighbour
 Belt ..|> ICanTransport
 
-class Spliter {
-  --
-  <<ScriptableObject>>
-  - int maxHp
-  - Vector2Int sizeInCells
-}
+class Spliter
 InteractiveObject <|-- Spliter
 Spliter ..|> IFindNeighbour
 Spliter ..|> ICanTransport
 
-class Insester {
-  --
-  <<ScriptableObject>>
-  - int maxHp
-  - Vector2Int sizeInCells
-}
+class Insester
 InteractiveObject <|-- Insester
 Insester ..|> IFindNeighbour
 Insester ..|> ICanTransport
@@ -149,8 +120,6 @@ class ElectricPole {
   - void ConnectToStructures()
   --
   <<ScriptableObject>>
-  - int maxHp
-  - Vector2Int sizeInCells
   - Vector2Int coverageArea
 }
 InteractiveObject <|-- ElectricPole
@@ -161,10 +130,8 @@ class Turret {
   - EnemyScript enemy
   --
   <<ScriptableObject>>
-  - int maxHp
   - float damageScale
   - int consumeElectricityAmount
-  - Vector2Int sizeInCells
 }
 InteractiveObject <|-- Turret
 Turret ..|> ICanAttack
@@ -175,20 +142,17 @@ class Factory {
   - int productCurrSpeed
   --
   <<ScriptableObject>>
-  - int maxHp
   - int consumeElectricityAmount
-  - Vector2Int sizeInCells
   - List<Item> inputItemList
 }
 InteractiveObject <|-- Factory
 Factory ..|> ICanProduce
 Factory ..|> ICanTake
 Factory ..|> IConsumeElectricity
-Factory --> Recipe
-
+Factory --> RecipeData
 
 'Items
-class Recipe <<ScriptableObject>> {
+class RecipeData <<ScriptableObject>> {
   # List<ItemData> inputItems
   # List<int> inputCounts
   # List<ItemData> outputItems
@@ -197,28 +161,40 @@ class Recipe <<ScriptableObject>> {
   # float productionTime
   # float electricityCost
 }
-Recipe --> ItemData
+RecipeData --> ItemData
 
 class ItemData <<ScriptableObject>> {
   # string title
   # Sprite icon
 }
 
-
 'Grid
-class Grid <<MonoBehaviour>> {
+class GridManager <<MonoBehaviour>> {
+  - GridScript grid
+  - HeatMapVisual heatMapVisual
+  - GridDebugViewer gridDebugViewer
+  - GridData gridData
+  + GridScript GetGrid()
+}
+class GridData <<ScriptableObject>> {
+  + int width
+  + int height
+  + float cellSize
+  + Vector3 originPosition
+}
+GridManager <-- GridData
+
+class GridScript <<MonoBehaviour>> {
   <<MonoBehaviour>>
   - int[,] gridArray
   - TextMesh[,] debugTextArray
-  --
-  <<ScriptableObject>>
-  - int width
-  - int height
-  - float cellSize
-  - Vector3 originPosition
+  - Dictionary<Vector2Int, StructureScript> objectGrid
+  + bool PlaceObject(Vector2Int pos, StructureScript structure)
+  + void RemoveObject(Vector2Int pos)
+  + StructureScript GetObject(int gridX, int gridY)
 }
-Grid --> Structure
-
+GridManager --> GridScript
+GridScript --> Structure
 
 'Creature
 class Creature {
@@ -277,7 +253,7 @@ class EnemyAnimationScript <<MonoBehaviour>> {
   + void SetMoveSpeed(float speed)
 }
 
-' Relations
+'Relations
 EnemyScript *-- EnemyChooseActionScript
 EnemyScript *-- EnemyMovementScript
 EnemyScript *-- EnemyAttackScript
@@ -285,30 +261,89 @@ EnemyScript *-- EnemyAnimationScript
 EnemyChooseActionScript --> EnemyMovementScript : commands
 EnemyChooseActionScript --> EnemyAttackScript : commands
 
-
-
 'CardSystem
-class CardSystem <<MonoBehaviour>> {
-  + List<<CardData>> deckList
-  - void PlaceCard()
-  - void CreateGhostStructure()
-  --
+class CardSystem {
+  + {static} CardSystem Instance
+  + HandViewScript handView
+  + void SpawnCard(GameObject cardPrefab)
+  + void RemoveCardFromHand(CardScript card)
+  + void SpawnMultipleCards(List<GameObject> prefabs)
 }
-CardSystem --> CardData
-class CardData <<ScriptableObject>> {
-  + prefab prefab
+CardSystem --> CardScript
+
+class HandViewScript {
+  + void AddCard(CardScript card, int index)
+  + void RemoveCard(CardScript card)
+  + void UpdateLayout()
+  + void AnimateLayout()
+  + int GetIndexByLocalX(float localX)
+  + void SetPreviewIndex(int? index)
 }
-CardSystem --> BuildSystem : uses function
+CardSystem --> HandViewScript
+HandViewScript --> CardScript
 
-
-
-class BuildSystem <<MonoBehaviour>> {
-  + static BuildSystem Instance
-  - PlaceStructure(Vector3 worldPosition)
-  - void Build()
-  - bool CheckPlace()
-  - void Move()
+class CardScript {
+  + CardData data
+  + DragDrop drag
+  + HandViewScript ownerHand
+  + RectTransform Rect
 }
-BuildSystem --> Grid : uses functions
+CardScript --> DragDrop
+CardScript --> HandViewScript
+CardScript <-- CardData
+CardScript -- ItemSlot
+
+class CardData {
+  + string title
+  + Sprite icon
+  + GameObject structurePrefab
+}
+
+class DragDrop {
+  + void OnBeginDrag()
+  + void OnDrag()
+  + void OnEndDrag()
+  - int GetHoveredCardIndex()
+}
+DragDrop <-- HandViewScript
+DragDrop <-- CursorManager
+DragDrop --> BuildManager
+
+class ItemSlot {
+  + void OnDrop()
+}
+
+'BuildManager
+class BuildManager {
+  + {static} BuildManager Instance
+  + bool PlaceObject(CardData data, Vector3 pos)
+  + bool CheckPlace()
+  + void RemoveObject(Vector2Int pos)
+}
+BuildManager --> GridScript
+
+'Selection
+class SelectionManager {
+  + {static} SelectionManager Instance
+  - List<StructureScript> selected
+  + void Select(StructureScript s)
+  + void Deselect(StructureScript s)
+  + void DeselectAll()
+}
+CursorManager --> SelectionManager
+SelectionManager --> GridScript
+
+class CursorManager {
+  + {static} CursorManager Instance
+  + Vector3 GetCursorWorldPosition()
+}
+
+'ButtonManager
+class ButtonManager {
+  - GameObject beltPref
+  - GameObject factoryPref
+  - void KeyPressed()
+}
+ButtonManager --> CardSystem
 
 @enduml
