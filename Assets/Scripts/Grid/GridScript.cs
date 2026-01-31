@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-public class GridScript : IStrCanRemove
+public class GridScript
 {
 
     public const int HEAT_MAP_MAX_VALUE = 100;
