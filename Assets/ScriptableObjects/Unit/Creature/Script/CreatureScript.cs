@@ -1,15 +1,8 @@
 using UnityEngine;
 
-public class CreatureScript : UnitScript, ICanMove, IDamageable
+public class CreatureScript : UnitScript
 {
-    public void Move()
-    {
-        Debug.Log("Move() called from CreatureScript");
-    }
-    public void ChoosePlaceToMove()
-    {
-        Debug.Log("Move() called from CreatureScript");
-    }
+    
 
     public void TakeDamage(int amount)
     {

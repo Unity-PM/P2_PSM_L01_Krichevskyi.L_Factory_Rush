@@ -1,10 +1,11 @@
 using UnityEngine;
+using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "Enemy", menuName = "Scriptable Objects/Enemies/Enemy")]
+[CreateAssetMenu(fileName = "Enemy", menuName = "Scriptable Objects/Enemy/Enemy")]
 public class EnemyData : ScriptableObject
 {
     public string title = "unknown enemy";
-    public int maxHp = 600;
+    public int maxHp;
     public float moveSpeed;
-    public float attackSpeed;
+    List<PriorityGroupData> priorities;
 }

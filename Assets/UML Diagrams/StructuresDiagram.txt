@@ -54,7 +54,9 @@ interface ICanMove {
 interface ICanAttack {
   <<MonoBehaviour>>
   + void AttackUnit()
-  --
+}
+interface IChooseUnit {
+  + void ChooseUnit()
 }
 interface IDamageable {
   + void TakeDamage(int amount)
@@ -197,13 +199,8 @@ GridManager --> GridScript
 GridScript --> Structure
 
 'Creature
-class Creature {
-  --
-  <<ScriptableObject>>
-  # float walkSpeed
-}
+class Creature
 Unit <|-- Creature
-Creature ..|> ICanMove
 Creature ..|> IDamageable
 
 'Enemy
@@ -219,35 +216,38 @@ class EnemyScript <<MonoBehaviour>> {
   --
 }
 Creature <|-- EnemyScript
-EnemyScript ..|> ICanAttack
 
 class EnemyData <<ScriptableObject>> {
   + string title
   + int maxHp
   + float moveSpeed
-  + List<PriorityGroup> priorities
+  + List<PriorityGroupData> priorities
 }
 EnemyScript <-- EnemyData
-EnemyData <-- PriorityGroup
+EnemyData <-- PriorityGroupData
 
-class PriorityGroup <<SerializableStruct>> {
+class PriorityGroupData <<SerializableStruct>> {
   + StructureScript type
   + float weight
 }
 
 class EnemyChooseActionScript <<MonoBehaviour>> {
   - IDamageable currentTarget
-  + void Tnhink()
+  + void Think()
 }
+EnemyChooseActionScript <|.. IChooseUnit
 class EnemyMovementScript <<MonoBehaviour>> {
   - NavMeshAgent agent
   + void MoveTo(Vector3 position)
   + void Stop()
 }
+EnemyMovementScript ..|> ICanMove
 class EnemyAttackScript <<MonoBehaviour>> {
+  + AttackData data
   + void Attack(IDamageable target)
-  - float attackCooldown
 }
+EnemyAttackScript ..|> ICanAttack
+EnemyAttackScript <-- AttackData
 class EnemyAnimationScript <<MonoBehaviour>> {
   + void PlayAttack()
   + void SetMoveSpeed(float speed)
@@ -345,5 +345,13 @@ class ButtonManager {
   - void KeyPressed()
 }
 ButtonManager --> CardSystem
+
+
+'Attack
+class AttackData <<ScriptableObject>> {
+  + float damage
+  + float cooldown
+  + float range
+}
 
 @enduml

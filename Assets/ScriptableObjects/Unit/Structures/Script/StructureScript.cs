@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StructureScript : UnitScript, ICanSelect, IDamageable
+public class StructureScript : UnitScript, ICanSelect
 {
     [SerializeField] protected int direction = 1;
     [SerializeField] protected List<Vector2Int> occupiedPositions = new List<Vector2Int>();
@@ -29,10 +29,6 @@ public class StructureScript : UnitScript, ICanSelect, IDamageable
     public void OnDeselected()
     {
         //Debug.Log("OnDeselected() called from StructureScript");
-    }
-    public void TakeDamage(int amount)
-    {
-        Debug.Log("TakeDamage() called from StructureScript");
     }
 
 }
