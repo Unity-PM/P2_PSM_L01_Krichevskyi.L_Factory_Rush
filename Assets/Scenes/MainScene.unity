@@ -1401,7 +1401,6 @@ MonoBehaviour:
   radius: 400
   verticalThreshold: 120
   verticalThresholdGhost: 80
-  ySpawn: -70
   layoutSpeed: 10
 --- !u!4 &192376090 stripped
 Transform:
@@ -7323,9 +7322,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 927dc208a57a8b84da48d8cef30c0023, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Testing
+  beltPrefab: {fileID: 1020346517477026908, guid: 9ca7e90c5caa7714f9309b3f3d7ded3e, type: 3}
+  factoryPrefab: {fileID: 6223374688866430641, guid: a91c4fda685fbfd48861e7c0848ffcd2, type: 3}
   heatMapVisual: {fileID: 1711253081}
   gridDebugViewer: {fileID: 588640383}
-  gridData: {fileID: 11400000, guid: e04396721f66f8d4e8d0c90ffc9192da, type: 2}
 --- !u!4 &1187675652
 Transform:
   m_ObjectHideFlags: 0

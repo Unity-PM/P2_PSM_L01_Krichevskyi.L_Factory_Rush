@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
-public class BuildManager : MonoBehaviour
+public class BuildManager : MonoBehaviour, IStrCanBuild, IStrCanMove
 {
     public static BuildManager Instance;
 
@@ -123,9 +123,9 @@ public class BuildManager : MonoBehaviour
     {
         grid.RemoveObject(pos);
     }
-    public void RelocateObject()
+    public void MoveObject()
     {
-        Debug.Log("RelocateObject() called from BuildManager");
+
     }
 
     // Обновление позиции Ghost (вызывать из Update)
