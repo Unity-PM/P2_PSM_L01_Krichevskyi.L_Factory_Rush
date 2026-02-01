@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class CreatureScript : UnitScript
+public class CreatureScript : UnitScript, IDamageable
 {
     
 
-    public void TakeDamage(int amount)
+    public virtual void TakeDamage(int amount)
     {
         Debug.Log("TakeDamage() called from CreatureScript");
     }

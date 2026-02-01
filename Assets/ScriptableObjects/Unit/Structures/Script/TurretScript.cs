@@ -14,7 +14,7 @@ public class TurretScript : InteractiveObjectScript, ICanAttack, IConsumeElectri
         enemy = null;
     }
 
-    public void AttackUnit()
+    public void AttackUnit(IDamageable target)
     {
         Debug.Log("AttackUnit() called from TurretScript");
     }

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Attack", menuName = "Scriptable Objects/Attack/Attack")]
-public class AtackData : ScriptableObject
+public class AttackData : ScriptableObject
 {
     [Header("General")]
     public float damage = 10f;

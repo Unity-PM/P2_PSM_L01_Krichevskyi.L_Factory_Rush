@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StructureScript : UnitScript, ICanSelect
+public class StructureScript : UnitScript, IDamageable, ICanSelect
 {
     [SerializeField] protected int direction = 1;
     [SerializeField] protected List<Vector2Int> occupiedPositions = new List<Vector2Int>();
@@ -21,6 +21,10 @@ public class StructureScript : UnitScript, ICanSelect
         return occupiedPositions;
     }
 
+    public virtual void TakeDamage(int amount)
+    {
+        Debug.Log("TakeDamage() called from CreatureScript");
+    }
 
     public void OnSelected()
     {

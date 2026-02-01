@@ -43,7 +43,7 @@ interface ICanRelocate {
 }
 
 'Enemy
-interface ICanMove {
+interface ICanMoveTo {
   <<MonoBehaviour>>
   + void Move()
   + void ChooseDestination()
@@ -55,7 +55,7 @@ interface ICanAttack {
   <<MonoBehaviour>>
   + void AttackUnit()
 }
-interface IChooseUnit {
+interface ICanChooseUnit {
   + void ChooseUnit()
 }
 interface IDamageable {
@@ -235,13 +235,13 @@ class EnemyChooseActionScript <<MonoBehaviour>> {
   - IDamageable currentTarget
   + void Think()
 }
-EnemyChooseActionScript <|.. IChooseUnit
+EnemyChooseActionScript <|.. ICanChooseUnit
 class EnemyMovementScript <<MonoBehaviour>> {
   - NavMeshAgent agent
   + void MoveTo(Vector3 position)
   + void Stop()
 }
-EnemyMovementScript ..|> ICanMove
+EnemyMovementScript ..|> ICanMoveTo
 class EnemyAttackScript <<MonoBehaviour>> {
   + AttackData data
   + void Attack(IDamageable target)

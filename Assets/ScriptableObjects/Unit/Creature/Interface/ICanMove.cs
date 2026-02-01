@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface ICanMove
 {
-    public void Move();
+    public void MoveTo(Vector3 position);
 }

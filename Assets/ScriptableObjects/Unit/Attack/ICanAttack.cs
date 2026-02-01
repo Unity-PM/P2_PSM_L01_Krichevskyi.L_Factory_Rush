@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface ICanAttack
 {
-    public void AttackUnit();
+    public void AttackUnit(IDamageable target);
 }

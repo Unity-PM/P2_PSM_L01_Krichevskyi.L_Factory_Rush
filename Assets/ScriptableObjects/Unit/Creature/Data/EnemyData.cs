@@ -7,5 +7,5 @@ public class EnemyData : ScriptableObject
     public string title = "unknown enemy";
     public int maxHp;
     public float moveSpeed;
-    List<PriorityGroupData> priorities;
+    public List<PriorityGroupData> priorities;
 }

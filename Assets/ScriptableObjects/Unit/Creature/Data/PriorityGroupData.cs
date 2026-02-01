@@ -4,6 +4,6 @@ using UnityEngine;
 [System.Serializable]
 public class PriorityGroupData
 {
-    public StructureScript targetType;
+    public UnitData targetType;
     public float weight;
 }
