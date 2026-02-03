@@ -5,8 +5,8 @@ public class TurretScript : InteractiveObjectScript, IConsumeElectricity
 {
     [SerializeField] private TurretData data;
 
-    [SerializeField] public TurretChooseActionScript chooseAction;
-    [SerializeField] public AttackScript attack;
+    public TurretChooseActionScript chooseAction;
+    public AttackScript attack;
 
     private EnemyScript enemy;
 

@@ -74,7 +74,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 4ec13515159c8f144a37fda3d7e47dbf, type: 3}
       propertyPath: m_Name
-      value: Turret1
+      value: Turret1Prefab
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 4ec13515159c8f144a37fda3d7e47dbf, type: 3}
       propertyPath: m_Layer
@@ -172,4 +172,4 @@ MonoBehaviour:
   attackData:
     damage: 30
     cooldown: 0.5
-    range: 10
+    range: 3

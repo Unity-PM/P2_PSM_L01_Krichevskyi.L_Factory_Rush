@@ -167,10 +167,16 @@ public class GridScript
         if (!objectGrid.TryGetValue(pos, out StructureScript s))
             return;
 
-        objectGrid[pos].OnDeathInvoke();
+        List<Vector2Int> occupiedCells = s.GetPositions();
 
+        s.OnDeathInvoke();
         SelectionManager.Instance.Deselect(s);
-        objectGrid.Remove(pos);
+
+        foreach (var cell in occupiedCells)
+        {
+            objectGrid.Remove(cell);
+        }
+
         GameObject.Destroy(s.gameObject);
 
     }
