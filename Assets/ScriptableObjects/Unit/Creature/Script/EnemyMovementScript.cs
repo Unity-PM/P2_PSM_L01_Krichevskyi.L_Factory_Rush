@@ -5,10 +5,17 @@ using UnityEngine.UIElements;
 public class EnemyMovementScript : MonoBehaviour, ICanMove
 {
     private NavMeshAgent agent;
+    private EnemyScript enemy;
 
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        enemy = GetComponent<EnemyScript>();
+    }
+
+    void Start()
+    {
+        agent.speed = enemy.data.moveSpeed;
     }
 
     public void MoveTo(Vector3 position)

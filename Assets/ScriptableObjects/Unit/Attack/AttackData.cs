@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Attack", menuName = "Scriptable Objects/Attack/Attack")]
-public class AttackData : ScriptableObject
+[System.Serializable]
+public class AttackData
 {
     [Header("General")]
     public float damage = 10f;

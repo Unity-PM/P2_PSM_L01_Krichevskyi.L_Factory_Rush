@@ -1,12 +1,15 @@
+using System;
 using UnityEngine;
 
 public class UnitScript : MonoBehaviour
 {
-    protected int currHp = 1;
+    [SerializeField] protected int currHp;
+
+    public Action deathEvent;
 
     protected virtual void Die()
     {
-        Destroy(gameObject);
+        Debug.Log("Die() called from UnitScript");
     }
 
     public virtual string GetDisplayName()

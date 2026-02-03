@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BeltPrefab
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1298ca5b572a3cb4da0072fe5d85ce1d, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -59,6 +63,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1298ca5b572a3cb4da0072fe5d85ce1d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4195961452611506323}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1298ca5b572a3cb4da0072fe5d85ce1d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8699339704933407167}
   m_SourcePrefab: {fileID: 100100000, guid: 1298ca5b572a3cb4da0072fe5d85ce1d, type: 3}
 --- !u!1 &1020346517477026908 stripped
 GameObject:
@@ -77,5 +84,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c85e8ba6899f54ab4e4f9a5b9c5b41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BeltScript
+  currHp: 0
+  direction: 1
   occupiedPositions: []
   data: {fileID: 11400000, guid: 850fb6598fe899542ab879c2c06dc106, type: 2}
+--- !u!65 &8699339704933407167
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1020346517477026908}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 0.5, z: 1}
+  m_Center: {x: 0, y: 0.25, z: 0}
