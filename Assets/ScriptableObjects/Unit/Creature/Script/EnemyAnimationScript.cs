@@ -11,13 +11,11 @@ public class EnemyAnimationScript : MonoBehaviour
         animator = GetComponent<Animator>();
         attackModule = GetComponent<AttackScript>();
 
-        // Подписка на ивент атаки
         attackModule.OnAttackPerformed += PlayAttack;
     }
 
     private void PlayAttack()
     {
-        // Триггер сам сработает и вернётся в Idle/Move
         animator.SetTrigger("Attack");
     }
 

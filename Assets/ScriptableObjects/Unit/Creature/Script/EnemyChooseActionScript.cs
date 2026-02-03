@@ -75,6 +75,7 @@ public class EnemyChooseActionScript : MonoBehaviour, ICanChooseUnit
 
         if (bestTarget != null)
         {
+            if (currentTarget != null) { currentTarget.OnDeath -= SetCurrentTargetNull; }
             bestTarget.OnDeath += SetCurrentTargetNull;
         }
 
