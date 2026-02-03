@@ -23,23 +23,12 @@ public class StructureScript : UnitScript, IDamageable, ICanSelect
         return occupiedPositions;
     }
 
-    public virtual void TakeDamage(int amount)
-    {
-        Debug.Log("TakeDamage() called from CreatureScript");
-        currHp -= amount;
-        Debug.Log($"StructureScript object got {amount} damage");
-
-        if (currHp <= 0)
-            Die();
-    }
     protected override void Die()
     {
+        OnDeath?.Invoke();
         BuildManager.Instance.RemoveObject(occupiedPositions[0]);
     }
-    public void OnDeathInvoke()
-    {
-        OnDeath?.Invoke();
-    }
+
 
     public void OnSelected()
     {

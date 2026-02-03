@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: FactoryCardData
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   title: Factory
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 4efd27bcb825d2e44a0744e9bd01a34a, type: 3}
   structurePrefab: {fileID: 6223374688866430641, guid: a91c4fda685fbfd48861e7c0848ffcd2, type: 3}

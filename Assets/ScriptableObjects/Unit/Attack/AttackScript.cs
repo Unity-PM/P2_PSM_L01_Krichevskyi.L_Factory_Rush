@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class EnemyAttackScript : MonoBehaviour, ICanAttack
+public class AttackScript : MonoBehaviour, ICanAttack
 {
     public AttackData attackData;
     public Action OnAttackPerformed;
@@ -11,7 +11,7 @@ public class EnemyAttackScript : MonoBehaviour, ICanAttack
 
     public void AttackUnit(IDamageable target)
     {
-        Debug.Log("AttackUnit() called from EnemyAttackScript");
+        /*Debug.Log("AttackUnit() called from AttackScript");*/
 
         if (target == null) return;
 

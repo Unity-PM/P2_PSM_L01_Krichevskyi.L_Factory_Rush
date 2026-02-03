@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class ButtonManager : MonoBehaviour
 {
-    [SerializeField] private GameObject beltPref;
-    [SerializeField] private GameObject factoryPref;
+    [SerializeField] private List<GameObject> cardPref;
 
     void Update()
     {
@@ -28,13 +27,18 @@ public class ButtonManager : MonoBehaviour
                 BuildManager.Instance.RemoveObject(xz);
             }
         }
+
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            CardSystem.Instance.SpawnCard(beltPref);
+            CardSystem.Instance.SpawnCard(cardPref[0]);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            CardSystem.Instance.SpawnCard(factoryPref);
+            CardSystem.Instance.SpawnCard(cardPref[1]);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            CardSystem.Instance.SpawnCard(cardPref[2]);
         }
     }
 }

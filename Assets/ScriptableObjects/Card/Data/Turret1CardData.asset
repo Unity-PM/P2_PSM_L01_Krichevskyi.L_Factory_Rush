@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4280250879bcc934d8ed66edcf31d114, type: 3}
-  m_Name: BeltCardData
+  m_Name: Turret1CardData
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  title: Belt
-  icon: {fileID: 21300000, guid: fe21d8401a68ea5459a78d6a5105e9fe, type: 3}
-  structurePrefab: {fileID: 1020346517477026908, guid: 9ca7e90c5caa7714f9309b3f3d7ded3e, type: 3}
+  title: Turret1
+  icon: {fileID: 21300000, guid: 4efd27bcb825d2e44a0744e9bd01a34a, type: 3}
+  structurePrefab: {fileID: 4215338286325523134, guid: e742d432ca740b54d86d7fa32d8d4a8b, type: 3}

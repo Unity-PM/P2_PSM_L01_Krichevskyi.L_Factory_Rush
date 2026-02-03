@@ -3,13 +3,13 @@ using UnityEngine;
 public class EnemyAnimationScript : MonoBehaviour
 {
     private Animator animator;
-    private EnemyAttackScript attackModule;
+    private AttackScript attackModule;
     private EnemyMovementScript moveModule;
 
     void Awake()
     {
         animator = GetComponent<Animator>();
-        attackModule = GetComponent<EnemyAttackScript>();
+        attackModule = GetComponent<AttackScript>();
 
         // Подписка на ивент атаки
         attackModule.OnAttackPerformed += PlayAttack;

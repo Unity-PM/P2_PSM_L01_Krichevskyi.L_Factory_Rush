@@ -15,12 +15,12 @@ public class EnemyMovementScript : MonoBehaviour, ICanMove
 
     void Start()
     {
-        agent.speed = enemy.data.moveSpeed;
+        agent.speed = enemy.GetMoveSpeed();
     }
 
     public void MoveTo(Vector3 position)
     {
-        Debug.Log("Move() called from EnemyMovementScript");
+        /*Debug.Log("Move() called from EnemyMovementScript");*/
 
         agent.isStopped = false;
         agent.SetDestination(position);

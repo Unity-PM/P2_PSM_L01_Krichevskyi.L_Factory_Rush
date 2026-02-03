@@ -1,11 +1,14 @@
 using System;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class CreatureScript : UnitScript, IDamageable
 {
     public event Action OnDeath;
-    public virtual void TakeDamage(int amount)
+
+    protected override void Die()
     {
-        Debug.Log("TakeDamage() called from CreatureScript");
+        OnDeath?.Invoke();
+        Destroy(gameObject);
     }
 }

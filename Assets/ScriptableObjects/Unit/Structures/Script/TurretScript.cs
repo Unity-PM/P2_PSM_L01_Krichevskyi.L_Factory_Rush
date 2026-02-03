@@ -1,27 +1,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TurretScript : InteractiveObjectScript, ICanAttack, IConsumeElectricity
+public class TurretScript : InteractiveObjectScript, IConsumeElectricity
 {
     [SerializeField] private TurretData data;
 
+    [SerializeField] public TurretChooseActionScript chooseAction;
+    [SerializeField] public AttackScript attack;
+
     private EnemyScript enemy;
+
+    private void Awake()
+    {
+        chooseAction = GetComponent<TurretChooseActionScript>();
+        attack = GetComponent<AttackScript>();
+    }
 
     private void Start()
     {
         currHp = data.maxHp;
-
-        enemy = null;
     }
 
-    public void AttackUnit(IDamageable target)
-    {
-        Debug.Log("AttackUnit() called from TurretScript");
-    }
-    public void ChooseUnit()
-    {
-        Debug.Log("ChooseUnit() called from TurretScript");
-    }
+
 
     public void ConsumeElectricity()
     {

@@ -4,19 +4,19 @@ using UnityEngine;
 public class EnemyScript : CreatureScript
 {
 
-    [SerializeField] public EnemyData data;
+    [SerializeField] private EnemyData data;
 
     public EnemyChooseActionScript chooseAction;
     public EnemyMovementScript movement;
-    public EnemyAttackScript attack;
+    public AttackScript attack;
     public EnemyAnimationScript animation;
 
 
     private void Awake()
     {
-        movement = GetComponent<EnemyMovementScript>();
-        attack = GetComponent<EnemyAttackScript>();
         chooseAction = GetComponent<EnemyChooseActionScript>();
+        movement = GetComponent<EnemyMovementScript>();
+        attack = GetComponent<AttackScript>();
         animation = GetComponent<EnemyAnimationScript>();
     }
 
@@ -25,6 +25,13 @@ public class EnemyScript : CreatureScript
     {
         currHp = data.maxHp;
     }
+
+
+    public float GetMoveSpeed()
+    {
+        return data.moveSpeed;
+    }
+    
 
 
 }

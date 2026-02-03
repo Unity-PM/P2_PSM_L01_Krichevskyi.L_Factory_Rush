@@ -15,7 +15,6 @@ public class EnemyChooseActionScript : MonoBehaviour, ICanChooseUnit
     private void Start()
     {
         enemy = GetComponent<EnemyScript>();
-        // Запускаем цикл размышлений раз в секунду, чтобы не грузить процессор
         InvokeRepeating(nameof(Think), 0f, searchInterval);
     }
 
@@ -25,7 +24,6 @@ public class EnemyChooseActionScript : MonoBehaviour, ICanChooseUnit
 
         Collider targetCollider = ((MonoBehaviour)currentTarget).GetComponent<Collider>();
         Vector3 closestPoint = targetCollider.ClosestPoint(transform.position);
-
         distanceToTarget = Vector3.Distance(transform.position, closestPoint);
 
         if (distanceToTarget <= enemy.attack.attackData.range)
@@ -44,6 +42,10 @@ public class EnemyChooseActionScript : MonoBehaviour, ICanChooseUnit
 
         if (currentTarget == null)
             return;
+
+        Collider targetCollider = ((MonoBehaviour)currentTarget).GetComponent<Collider>();
+        Vector3 closestPoint = targetCollider.ClosestPoint(transform.position);
+        distanceToTarget = Vector3.Distance(transform.position, closestPoint);
 
         if (distanceToTarget <= enemy.attack.attackData.range)
         {
