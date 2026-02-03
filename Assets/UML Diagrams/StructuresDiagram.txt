@@ -1,107 +1,357 @@
 @startuml
 !theme mars
-' UML diagram for Structure and its subtypes (PlantUML) with clearer interface layout
 
-interface ICanBuild {
-  # Build()
+'Structure
+interface ICanTake {
+  <<MonoBehaviour>>
+  + void TakeItem();
+  --
 }
-interface ICanMove {
-  # Move()
-  # CheckPlace()
-}
-interface ICanRemove {
-  # Remove()
-}
-interface ICanShoot {
-  # watchEnemy()
-  # shootEnemy()
+interface IFindNeighbour {
+  <<MonoBehaviour>>
+  + void FindSameNeighbour()
+  --
 }
 interface ICanProduce {
-  # int productMaxSpeed
-  # produceObject()
+  <<MonoBehaviour>>
+  + void ProduceItem()
+  --
 }
-interface ICanTake {
-  # vec2d takeObjectList
-  # int takeObjectMaxSpeed
+interface ICanTransport {
+  <<MonoBehaviour>>
+  + void TransportItem()
+  + float transportSpeed
+  --
 }
-interface IFindSameNeighbour {
-  # FindNeighbour()
+interface IConsumeElectricity {
+  <<MonoBehaviour>>
+  + void ConsumeElectricity()
+  --
 }
-interface IFindDiffNeighbour {
-  # FindDiffNeighbour()
+interface ICanSelect {
+  <<MonoBehaviour>>
+  + void OnSelected()
+  + void OnDeselected()
+  --
+}
+interface ICanRotate {
+  <<MonoBehaviour>>
+  + void RotateStructure()
+}
+interface ICanRelocate {
+  void RelocateStructure()
 }
 
-class Structure {
-  # int maxHp
-  # int currHp
-  # Vector2 space
+'Enemy
+interface ICanMoveTo {
+  <<MonoBehaviour>>
+  + void Move()
+  + void ChooseDestination()
+  --
+}
+
+'General
+interface ICanAttack {
+  <<MonoBehaviour>>
+  + void AttackUnit()
+}
+interface ICanChooseUnit {
+  + void ChooseUnit()
+}
+interface IDamageable {
+  + void TakeDamage(int amount)
+}
+
+
+class Unit {
+  <<MonoBehaviour>>
+  + currHp
+  + virtual string GetDisplayName()
+  --
+  <<ScriptableObject>>
+  + int maxHp
+}
+GridScript --> Unit
+
+class Structure <<MonoBehaviour>> {
+  <<MonoBehaviour>>
   # int direction
-  # Vector2 position
+  # List<Vector2Int> occupiedPositions
+  + virtual Vector2Int GetSizeInCells()
+  + void SetPositions(List<Vector2Int> positions)
+  + List<Vector2Int> GetPositions()
+  --
+  <<ScriptableObject>>
+  + Vector2Int sizeInCells
 }
-Structure ..|> ICanRemove
-
-class InteractiveObject
-Structure <|-- InteractiveObject
-InteractiveObject ..|> ICanBuild
-InteractiveObject ..|> ICanMove
+Unit <|-- Structure
+Structure ..|> ICanSelect
+Structure ..|> IDamageable
 
 class Obstacle
 Structure <|-- Obstacle
 
+class InteractiveObject
+Structure <|-- InteractiveObject
+InteractiveObject ..|> ICanRotate
+InteractiveObject ..|> ICanRelocate
+
 class Wall
 InteractiveObject <|-- Wall
-Wall ..|> IFindSameNeighbour
+Wall ..|> IFindNeighbour
 
-class TransportObject {
-  # int transportSpeed
-  # TransportObjectFunc()
-}
-InteractiveObject <|-- TransportObject
-TransportObject ..|> IFindSameNeighbour
+'Transport Structures
+class Belt
+InteractiveObject <|-- Belt
+Belt ..|> IFindNeighbour
+Belt ..|> ICanTransport
 
-class Belt {
-  # TransportObject()
-}
-class Spliter {
-  # TransportObject()
-}
-class Insester {
-  # TransportObject()
-}
-TransportObject <|-- Belt
-TransportObject <|-- Spliter
-TransportObject <|-- Insester
+class Spliter
+InteractiveObject <|-- Spliter
+Spliter ..|> IFindNeighbour
+Spliter ..|> ICanTransport
+
+class Insester
+InteractiveObject <|-- Insester
+Insester ..|> IFindNeighbour
+Insester ..|> ICanTransport
 
 class ElectricPole {
-  # vec2d actionArea
-  # GiveElectricity()
-  # FindAnotherPole()
-  # FindObjectsToGive()
+  <<MonoBehaviour>>
+  - void GiveElectricity()
+  - void ConnectToStructures()
+  --
+  <<ScriptableObject>>
+  - Vector2Int coverageArea
 }
-
 InteractiveObject <|-- ElectricPole
-ElectricPole ..|> IFindSameNeighbour
+ElectricPole ..|> IFindNeighbour
 
 class Turret {
-  - Enemy enemy
+  <<MonoBehaviour>>
+  - EnemyScript enemy
+  --
+  <<ScriptableObject>>
+  - float damageScale
+  - int consumeElectricityAmount
 }
 InteractiveObject <|-- Turret
-Turret ..|> ICanShoot
-Turret ..|> ICanTake
-Turret ..|> IFindDiffNeighbour
+Turret ..|> ICanAttack
+Turret ..|> IConsumeElectricity
 
-
-'class Furnace
-'class Assembler
 class Factory {
+  <<MonoBehaviour>>
   - int productCurrSpeed
-  - int produceItemIndex
+  --
+  <<ScriptableObject>>
+  - int consumeElectricityAmount
+  - List<Item> inputItemList
 }
 InteractiveObject <|-- Factory
 Factory ..|> ICanProduce
 Factory ..|> ICanTake
-Factory ..|> IFindDiffNeighbour
+Factory ..|> IConsumeElectricity
+Factory --> RecipeData
+
+'Items
+class RecipeData <<ScriptableObject>> {
+  # List<ItemData> inputItems
+  # List<int> inputCounts
+  # List<ItemData> outputItems
+  # List<int> outputCounts
+  # string title
+  # float productionTime
+  # float electricityCost
+}
+RecipeData --> ItemData
+
+class ItemData <<ScriptableObject>> {
+  # string title
+  # Sprite icon
+}
+
+'Grid
+class GridManager <<MonoBehaviour>> {
+  - GridScript grid
+  - HeatMapVisual heatMapVisual
+  - GridDebugViewer gridDebugViewer
+  - GridData gridData
+  + GridScript GetGrid()
+}
+class GridData <<ScriptableObject>> {
+  + int width
+  + int height
+  + float cellSize
+  + Vector3 originPosition
+}
+GridManager <-- GridData
+
+class GridScript <<MonoBehaviour>> {
+  <<MonoBehaviour>>
+  - int[,] gridArray
+  - TextMesh[,] debugTextArray
+  - Dictionary<Vector2Int, StructureScript> objectGrid
+  + bool PlaceObject(Vector2Int pos, StructureScript structure)
+  + void RemoveObject(Vector2Int pos)
+  + StructureScript GetObject(int gridX, int gridY)
+}
+GridManager --> GridScript
+GridScript --> Structure
+
+'Creature
+class Creature
+Unit <|-- Creature
+Creature ..|> IDamageable
+
+'Enemy
+class EnemyScript <<MonoBehaviour>> {
+  <<MonoBehaviour>>
+  + EnemyData data
+  - int currHp
+  -- Modules --
+  + EnemyChooseActionScript chooseAction
+  + EnemyMovementScript movement
+  + EnemyAttackScript attack
+  + EnemyAnimationScript animation
+  --
+}
+Creature <|-- EnemyScript
+
+class EnemyData <<ScriptableObject>> {
+  + string title
+  + int maxHp
+  + float moveSpeed
+  + List<PriorityGroupData> priorities
+}
+EnemyScript <-- EnemyData
+EnemyData <-- PriorityGroupData
+
+class PriorityGroupData <<SerializableStruct>> {
+  + StructureScript type
+  + float weight
+}
+
+class EnemyChooseActionScript <<MonoBehaviour>> {
+  - IDamageable currentTarget
+  + void Think()
+}
+EnemyChooseActionScript <|.. ICanChooseUnit
+class EnemyMovementScript <<MonoBehaviour>> {
+  - NavMeshAgent agent
+  + void MoveTo(Vector3 position)
+  + void Stop()
+}
+EnemyMovementScript ..|> ICanMoveTo
+class EnemyAttackScript <<MonoBehaviour>> {
+  + AttackData data
+  + void Attack(IDamageable target)
+}
+EnemyAttackScript ..|> ICanAttack
+EnemyAttackScript <-- AttackData
+class EnemyAnimationScript <<MonoBehaviour>> {
+  + void PlayAttack()
+  + void SetMoveSpeed(float speed)
+}
+
+'Relations
+EnemyScript *-- EnemyChooseActionScript
+EnemyScript *-- EnemyMovementScript
+EnemyScript *-- EnemyAttackScript
+EnemyScript *-- EnemyAnimationScript
+EnemyChooseActionScript --> EnemyMovementScript : commands
+EnemyChooseActionScript --> EnemyAttackScript : commands
+
+'CardSystem
+class CardSystem {
+  + {static} CardSystem Instance
+  + HandViewScript handView
+  + void SpawnCard(GameObject cardPrefab)
+  + void RemoveCardFromHand(CardScript card)
+  + void SpawnMultipleCards(List<GameObject> prefabs)
+}
+CardSystem --> CardScript
+
+class HandViewScript {
+  + void AddCard(CardScript card, int index)
+  + void RemoveCard(CardScript card)
+  + void UpdateLayout()
+  + void AnimateLayout()
+  + int GetIndexByLocalX(float localX)
+  + void SetPreviewIndex(int? index)
+}
+CardSystem --> HandViewScript
+HandViewScript --> CardScript
+
+class CardScript {
+  + CardData data
+  + DragDrop drag
+  + HandViewScript ownerHand
+  + RectTransform Rect
+}
+CardScript --> DragDrop
+CardScript --> HandViewScript
+CardScript <-- CardData
+CardScript -- ItemSlot
+
+class CardData {
+  + string title
+  + Sprite icon
+  + GameObject structurePrefab
+}
+
+class DragDrop {
+  + void OnBeginDrag()
+  + void OnDrag()
+  + void OnEndDrag()
+  - int GetHoveredCardIndex()
+}
+DragDrop <-- HandViewScript
+DragDrop <-- CursorManager
+DragDrop --> BuildManager
+
+class ItemSlot {
+  + void OnDrop()
+}
+
+'BuildManager
+class BuildManager {
+  + {static} BuildManager Instance
+  + bool PlaceObject(CardData data, Vector3 pos)
+  + bool CheckPlace()
+  + void RemoveObject(Vector2Int pos)
+}
+BuildManager --> GridScript
+
+'Selection
+class SelectionManager {
+  + {static} SelectionManager Instance
+  - List<StructureScript> selected
+  + void Select(StructureScript s)
+  + void Deselect(StructureScript s)
+  + void DeselectAll()
+}
+CursorManager --> SelectionManager
+SelectionManager --> GridScript
+
+class CursorManager {
+  + {static} CursorManager Instance
+  + Vector3 GetCursorWorldPosition()
+}
+
+'ButtonManager
+class ButtonManager {
+  - GameObject beltPref
+  - GameObject factoryPref
+  - void KeyPressed()
+}
+ButtonManager --> CardSystem
 
 
+'Attack
+class AttackData <<ScriptableObject>> {
+  + float damage
+  + float cooldown
+  + float range
+}
 
 @enduml
